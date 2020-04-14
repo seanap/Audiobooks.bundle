@@ -1,5 +1,8 @@
 # Audiobooks (Audible) metadata agent
 
+# UNDERDEVELOPMENT CURRENTLY NOT WORKING
+## Instead of reworking this metadata agent I would prefer to have a very basic agent that simply pulled the id3 tags, and set the plex tags.  If anyone has any python experiance, please help me make the Plex Audiobook experiance slightly better for everyone.
+
 Metadata agent for Audiobooks stored in a music library.
 
 This agent scrapes from Audible.com. It uses the `Album Artist` as the books Author and uses the `Album Title` as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job. You can manually search for each book if you don't have them tagged ahead of time.
