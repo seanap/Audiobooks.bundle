@@ -581,8 +581,6 @@ class AudiobookAlbum(Agent.Album):
         metadata.genres.clear()
         metadata.genres.add(genre1)
         metadata.genres.add(genre2)
-		# Add Series to Collection Tag
-		metadata.collections.add(series)
 		# Add Narrators to Style Tag
         narrators_list = narrator.split(",")
         for narrators in narrators_list:
@@ -595,7 +593,7 @@ class AudiobookAlbum(Agent.Album):
         metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
         metadata.posters.validate_keys(thumb)
         metadata.rating = float(rating) * 2
-
+		metadata.collections = series
         metadata.title = title
         media.artist = author
 		
