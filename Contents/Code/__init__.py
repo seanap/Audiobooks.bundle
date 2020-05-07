@@ -576,28 +576,22 @@ class AudiobookAlbum(Agent.Album):
 		# Set the date and year if found.
         if date is not None:
           metadata.originally_available_at = date
-
 		# Add the genres
-        metadata.genres.clear()
-		# Add Narrators to Style Tag
+#       metadata.genres.clear()
         narrators_list = narrator.split(",")
         for narrators in narrators_list:
             metadata.styles.add(narrators)
-			metadata.genres.add(narrators)
-        metadata.genres.add(genre1)
-        metadata.genres.add(genre2)
-#	if series not in metadata.collections: metadata.collections=[series]
-		# other metadata
-#	metadata.mood = series
-		metadata.title = title
+#	        metadata.genres.add(narrators)
+#       metadata.genres.add(genre1)
+#       metadata.genres.add(genre2)
+#		metadata.title = title
         metadata.studio = studio
         metadata.summary = synopsis
-        metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
-        metadata.posters.validate_keys(thumb)
+#       metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
+#       metadata.posters.validate_keys(thumb)
         metadata.rating = float(rating) * 2
-        metadata.title = title
-        media.artist = author
-		
+#       metadata.title = title
+#       media.artist = author
         self.writeInfo('New data', url, metadata)
 
     def hasProxy(self):
