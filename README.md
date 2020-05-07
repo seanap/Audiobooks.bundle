@@ -1,7 +1,7 @@
 # Audiobooks (Audible) metadata agent
 
-# UNDERDEVELOPMENT CURRENTLY NOT WORKING
-## Instead of reworking this metadata agent I would prefer to have a very basic agent that simply pulled the id3 tags, and set the plex tags.  If anyone has any python experiance, please help me make the Plex Audiobook experiance slightly better for everyone.
+# UNDERDEVELOPMENT COLLECTIONS CURRENTLY NOT WORKING
+## The series is currently pulled into AlbumSort tag, and the Narrator is mapped to Styles and Genre for filtering.
 
 Metadata agent for Audiobooks stored in a music library.
 
