@@ -1,7 +1,7 @@
 # Audiobooks (Audible) metadata agent
 
-# UNDERDEVELOPMENT COLLECTIONS CURRENTLY NOT WORKING
-## The series is currently pulled into AlbumSort tag, and the Narrator is mapped to Styles and Genre for filtering.
+# UNDERDEVELOPMENT - COLLECTIONS CURRENTLY NOT WORKING
+## The series is currently pulled into AlbumSort tag, the Narrator is mapped to Style, and only Genres put in the Genre tag.  This is for better filtering.
 
 Metadata agent for Audiobooks stored in a music library.
 
