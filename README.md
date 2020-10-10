@@ -1,9 +1,9 @@
 # SeaNap's Audiobook (Audible) metadata agent
 
 ## What is this?
-Metadata agent for Audiobooks stored in a music library.
+A Plex Metadata Agent for Audiobooks stored in a music library.
 
-This agent scrapes from Audible.com. It uses the `Album Artist` as the books Author and uses the `Album Title` as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job.
+This agent sets metadata for your Plex Audiobook library, scraping data from Audible.com. It uses the `Album Artist` tag as the books Author and uses the `Album Title` tag as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job.
 
 ## Differences between my version and Macr0dev's
 * The Narrator is mapped to Style.  
