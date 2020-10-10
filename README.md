@@ -31,7 +31,7 @@ This version allows for better filtering and cleaner browsing in plex and variou
 <!-- blank line -->
 ----
 <!-- blank line -->
-### Metadata supplied:
+### Metadata supplied to Plex:
 
 | id3 Tag       | Plex Tag|
 | ------------- | ---------------- |
