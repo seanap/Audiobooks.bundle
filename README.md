@@ -11,7 +11,9 @@ This agent scrapes from Audible.com. It uses the `Album Artist` as the books Aut
 * The series is currently pulled into AlbumSort tag.  
 
 This version allows for better filtering and cleaner browsing in plex and various audiobook apps (such as PlexAmp), a must have for large libraries. Everything else is the same.
-
+<!-- blank line -->
+----
+<!-- blank line -->
 ## Installation
 1. Download my repo by clicking [Here](https://github.com/seanap/Audiobooks.bundle/archive/master.zip).  
    * Alternatively, click the green 'Code' dropdown button and select “Download Zip”.
@@ -25,8 +27,11 @@ This version allows for better filtering and cleaner browsing in plex and variou
 5. Restart Plex Media Server to make sure that the new plugin will be loaded.
 
 ### Return to Guide
-[Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide#configure-plex-agent)
+[Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide#configure-metadata-agent-in-plex)
 
+<!-- blank line -->
+----
+<!-- blank line -->
 ### Metadata supplied:
 
 | id3 Tag       | Plex Tag|
