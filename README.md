@@ -1,14 +1,31 @@
-# Audiobooks (Audible) metadata agent
+# SeaNap's Audiobook (Audible) metadata agent
 
-# UNDERDEVELOPMENT - COLLECTIONS CURRENTLY NOT WORKING
-## The series is currently pulled into AlbumSort tag, the Narrator is mapped to Style, and only Genres put in the Genre tag.  This is for better filtering.
+## Differences between my version and Macr0dev's
+* The Narrator is mapped to Style.  
+* Only Genres put in the Genre tag.  
+* The series is currently pulled into AlbumSort tag.  
 
+This version allows for better filtering and cleaner browsing in plex and various audiobook apps (such as PlexAmp). Everything else is the same.
+
+## What is this?
 Metadata agent for Audiobooks stored in a music library.
 
-This agent scrapes from Audible.com. It uses the `Album Artist` as the books Author and uses the `Album Title` as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job. You can manually search for each book if you don't have them tagged ahead of time.
+This agent scrapes from Audible.com. It uses the `Album Artist` as the books Author and uses the `Album Title` as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job.
 
-Download: https://github.com/seanap/Audiobooks.bundle/archive/master.zip
+## Installation
+1. Download my repo by clicking [Here](https://github.com/seanap/Audiobooks.bundle/archive/master.zip).  
+   * Alternatively, click the green 'Code' dropdown button and select “Download Zip”.
+2. The plug-in bundle will be located within a zip archive. Unzip the archive.
+3. Edit the bundle’s folder name and remove "-master" so you are left with the foldername “Audiobooks.bundle”
+   * Bundles downloaded from GitHub will usually have extra identifiers appended to the bundle’s filename, such as “-master”.
+4. Copy or move the plug-in bundle into the Plug-Ins folder on the computer running Plex Media Server
+   * Windows: `%LOCALAPPDATA%\Plex Media Server\Plug-ins`
+   * macOS: `~/Library/Application Support/Plex Media Server/Plug-ins`
+   * Linux: `$PLEX_HOME/Library/Application Support/Plex Media Server/Plug-ins`
+5. Restart Plex Media Server to make sure that the new plugin will be loaded.
 
+### Return to Guide
+[Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide#configure-plex-agent)
 
 ### Metadata supplied:
 
@@ -17,7 +34,7 @@ Download: https://github.com/seanap/Audiobooks.bundle/archive/master.zip
 | ALBUM         | Title            |
 | ALBUMARTIST   | Author           |
 
-| Audible Data  | Plex Tag|
+| Scrapped Audible Data  | Plex Tag|
 | ------------- | ---------------- |
 | Narrator      | Style         |
 | Release Date  | Originally Available |
@@ -26,8 +43,6 @@ Download: https://github.com/seanap/Audiobooks.bundle/archive/master.zip
 | Production Studio | Record Label |
 | Book/Album Cover | Poster        |
 | Genres        | Genre |
-
-
 
 ### Library Creation Options:
 
