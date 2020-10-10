@@ -1,16 +1,16 @@
 # SeaNap's Audiobook (Audible) metadata agent
 
+## What is this?
+Metadata agent for Audiobooks stored in a music library.
+
+This agent scrapes from Audible.com. It uses the `Album Artist` as the books Author and uses the `Album Title` as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job.
+
 ## Differences between my version and Macr0dev's
 * The Narrator is mapped to Style.  
 * Only Genres put in the Genre tag.  
 * The series is currently pulled into AlbumSort tag.  
 
-This version allows for better filtering and cleaner browsing in plex and various audiobook apps (such as PlexAmp). Everything else is the same.
-
-## What is this?
-Metadata agent for Audiobooks stored in a music library.
-
-This agent scrapes from Audible.com. It uses the `Album Artist` as the books Author and uses the `Album Title` as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job.
+This version allows for better filtering and cleaner browsing in plex and various audiobook apps (such as PlexAmp), a must have for large libraries. Everything else is the same.
 
 ## Installation
 1. Download my repo by clicking [Here](https://github.com/seanap/Audiobooks.bundle/archive/master.zip).  
@@ -83,4 +83,4 @@ If you're NOT in the US, or just want more flexibility with your searches you ha
 
 -You can filter by the various tags that are added to each book. Be it author, series, narrator, etc.
 
--Orignal code by Macr0dev https://github.com/macr0dev/Audiobooks.bundle
+-Orignal and bulk of code by Macr0dev https://github.com/macr0dev/Audiobooks.bundle
