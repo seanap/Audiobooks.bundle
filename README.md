@@ -73,8 +73,8 @@ If you're NOT in the US, or just want more flexibility with your searches you ha
 * Set "Album" tag in audio file as the book title  
 * Set "Artist" tag in audio file as the book author    
 * Manual 'match' will use the Author/Artist field if it's present, but you cannot enter it manually.  Only the title.  
-* Make sure all the tracks have the same Artist/Albumartist and Album.  
-* Store each in a folder ``%author% \ %series% \ %year% - %album% \ %album% (%year%) - pt(%track%)``
+* Make sure all the tracks have the same Albumartist and Album, and also have correct Track Number tags.  
+* Store each in a folder `%author% \ %series% \ %year% - %album% \ %album% (%year%) - pt(%track%)`
 * If this agent matches two different books as the same book, which looks like a duplicate in Plex, Unmatch BOTH books and start by manually matching the incorrect book, then re-match the book that was correct.
 
 ### Notes:
