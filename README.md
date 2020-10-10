@@ -25,8 +25,7 @@ This version allows for better filtering and cleaner browsing in plex and variou
    * macOS: `~/Library/Application Support/Plex Media Server/Plug-ins`
    * Linux: `$PLEX_HOME/Library/Application Support/Plex Media Server/Plug-ins`
 5. Restart Plex Media Server to make sure that the new plugin will be loaded.
-
-### Return to Guide
+##### Return to Guide
 [Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide#configure-metadata-agent-in-plex)
 
 <!-- blank line -->
