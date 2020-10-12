@@ -37,16 +37,18 @@ This version allows for better filtering and cleaner browsing in plex and variou
 | ------------- | ---------------- |
 | ALBUM         | Title            |
 | ALBUMARTIST   | Author           |
+| ALBUMSORT     | Sort Album       |
+| cover         | Poster           |
 
 | Scrapped Audible Data  | Plex Tag|
 | ------------- | ---------------- |
-| Narrator      | Style         |
+| Narrator      | Style            |
 | Release Date  | Originally Available |
 | Publisher's Summary | Review     |
-| Series Title  | Collection           |
+| Series Title  | Collection       |
 | Production Studio | Record Label |
 | Book/Album Cover | Poster        |
-| Genres        | Genre |
+| Genres        | Genre            |
 
 ### Library Creation Options:
 
