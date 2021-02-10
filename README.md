@@ -3,7 +3,7 @@
 ## What is this?
 A Plex Metadata Agent for Audiobooks stored in a music library.
 
-This agent sets metadata for your Plex Audiobook library, scraping data from Audible.com. It uses the `Album Artist` tag as the books Author and uses the `Album Title` tag as the Book Title. All audio files will need to be tagged correctly in order for this thing to do it's job.
+This agent sets metadata for your Plex Audiobook library, scraping data from Audible.com. It uses the `Album Artist` tag as the books Author and uses the `Album Title` tag as the Book Title. All audio files will need to be tagged correctly in order for this thing to do its job.
 
 ## Differences between my version and Macr0dev's
 * The Narrator is mapped to Style.  
@@ -52,7 +52,7 @@ This version allows for better filtering and cleaner browsing in plex and variou
 
 ### Library Creation Options:
 
-- Create a `BASIC MUSIC LIBRARY` (not a premium Plex muisc library)
+- Create a `BASIC MUSIC LIBRARY` (not a premium Plex music library)
 - **DO NOT** check `Use Embedded Tags`
 - **DO** check `Store Track Progress`
 - Agent - Select `Audiobooks`
@@ -67,7 +67,7 @@ If you're NOT in the US, or just want more flexibility with your searches you ha
 - `Manually Select Audible Site`: This option allows you to manually select which site you're going to scrape.  
 - If this is not checked, the language you selected for the library, or the language selected for a manual match will be used to select which site to scrape from.  
 
-- `Select Audible site to use`: This option is ignored if `Manually Select Audible Site` box is not checked.  
+- `Select Audible site to use`: This option is ignored if the `Manually Select Audible Site` box is not checked.  
 
 ### Tips for greatest success:
 
