@@ -209,7 +209,8 @@ class AudiobookArtist(Agent.Artist):
             try:
                 func, args, kargs = queue.get(True, 0.05)
                 try: func(*args, **kargs)
-                except Exception, e: self.Log(e)
+                except Exception as e:
+                    self.Log(e)
                 queue.task_done()
             except Queue.Empty:
                 continue
@@ -266,14 +267,14 @@ class AudiobookAlbum(Agent.Album):
         found = []
         self.Log('-----------------------------------------just before new xpath line--------------------')
         for r in html.xpath('//ul//li[contains(@class,"productListItem")]'):
-            datetext = self.getStringContentFromXPath(r, 'div/div/div/div/div/div/span/ul/li[contains (@class,"releaseDateLabel")]/span'.decode('utf-8'))
+            datetext = self.getStringContentFromXPath(r, u'div/div/div/div/div/div/span/ul/li[contains (@class,"releaseDateLabel")]/span')
             datetext=re.sub(r'[^0-9\-]', '',datetext)
             date=self.getDateFromString(datetext)
             title = self.getStringContentFromXPath(r, 'div/div/div/div/div/div/span/ul//a[contains (@class,"bc-link")][1]')
             murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/div/div/span/ul/li/h3//a[1]')
             thumb = self.getImageUrlFromXPath(r, 'div/div/div/div/div/div/div[contains(@class,"responsive-product-square")]/div/a/img')
             author = self.getStringContentFromXPath(r, 'div/div/div/div/div/div/span/ul/li[contains (@class,"authorLabel")]/span/a[1]')
-            narrator = self.getStringContentFromXPath(r, 'div/div/div/div/div/div/span/ul/li[contains (@class,"narratorLabel")]/span//a[1]'.format(ctx['NAR_BY']).decode('utf-8'))
+            narrator = self.getStringContentFromXPath(r, u'div/div/div/div/div/div/span/ul/li[contains (@class,"narratorLabel")]/span//a[1]'.format(ctx['NAR_BY']))
             self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
             
             found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb, 'author': author, 'narrator': narrator})
@@ -281,12 +282,12 @@ class AudiobookAlbum(Agent.Album):
         self.Log('-----------------------------------------just after new xpath line--------------------')		
 
         for r in html.xpath('//div[contains (@class, "adbl-search-result")]'):
-            date = self.getDateFromString(self.getStringContentFromXPath(r, 'div/div/ul/li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE']).decode('utf-8')))
+            date = self.getDateFromString(self.getStringContentFromXPath(r, u'div/div/ul/li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE'])))
             title = self.getStringContentFromXPath(r, 'div/div/div/div/a[1]')
             murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/a[1]')
             thumb = self.getImageUrlFromXPath(r, 'div[contains (@class,"adbl-prod-image-sample-cont")]/a/img')
             author = self.getStringContentFromXPath(r, 'div/div/ul/li//a[contains (@class,"author-profile-link")][1]')
-            narrator = self.getStringContentFromXPath(r, 'div/div/ul/li[contains (., "{0}")]//a[1]'.format(ctx['NAR_BY']).decode('utf-8'))
+            narrator = self.getStringContentFromXPath(r, u'div/div/ul/li[contains (., "{0}")]//a[1]'.format(ctx['NAR_BY']))
             self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
             
             found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb, 'author': author, 'narrator': narrator})
@@ -472,7 +473,7 @@ class AudiobookAlbum(Agent.Album):
         genre2=None
 
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
-            date = self.getDateFromString(self.getStringContentFromXPath(r, '//li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE_INFO']).decode('utf-8')))
+            date = self.getDateFromString(self.getStringContentFromXPath(r, u'//li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE_INFO'])))
             title = self.getStringContentFromXPath(r, '//h1[contains (@class, "adbl-prod-h1-title")]/text()')
             murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/a[1]')
             thumb = self.getImageUrlFromXPath(r, 'div/div/div/div/div/img')
@@ -600,7 +601,8 @@ class AudiobookAlbum(Agent.Album):
             try:
                 func, args, kargs = queue.get(True, 0.05)
                 try: func(*args, **kargs)
-                except Exception, e: self.Log(e)
+                except Exception as e:
+                    self.Log(e)
                 queue.task_done()
             except Queue.Empty:
                 continue
