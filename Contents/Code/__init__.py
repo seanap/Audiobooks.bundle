@@ -1,16 +1,11 @@
 # Audiobooks (Audible)
 # coding: utf-8
-import re, types, traceback
-import urllib
-import Queue
 import json
+import re
+import types
 
-#from mutagen import File
-#from mutagen.mp4 import MP4
-#from mutagen.id3 import ID3
-#from mutagen.flac import FLAC
-#from mutagen.flac import Picture
-#from mutagen.oggvorbis import OggVorbis
+import Queue
+
 
 def json_decode(output):
   try:
