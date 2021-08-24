@@ -529,9 +529,10 @@ class AudiobookAlbum(Agent.Album):
             )
             # If this is a custom search,
             # use the user-entered name instead of the scanner hint.
-            Log(
-                'Custom album search for: ' + media.name
-            )
+            if media.name:
+                Log(
+                    'Custom album search for: ' + media.name
+                )
             media.album = media.name
         else:
             Log('Album search: ' + media.title)
@@ -544,7 +545,7 @@ class AudiobookAlbum(Agent.Album):
         self.Log('* ID:              %s', media.parent_metadata.id)
         self.Log('* Title:           %s', media.title)
         self.Log('* Name:            %s', media.name)
-        self.Log('* Album:            %s', media.album)
+        self.Log('* Album:           %s', media.album)
         self.Log(
             '-----------------------------------'
             '------------------------------------'
