@@ -1046,6 +1046,8 @@ class AudiobookAlbum(Agent.Album):
         )
         metadata.studio = studio
         metadata.summary = synopsis
+        metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
+        metadata.posters.validate_keys(thumb)
         # Use rating only when available
         if rating:
             metadata.rating = float(rating) * 2
@@ -1056,7 +1058,6 @@ class AudiobookAlbum(Agent.Album):
         metadata.collections.add(series)
         if series2:
             metadata.collections.add(series2)
-        # media.artist = author
         self.writeInfo('New data', url, metadata)
 
     def hasProxy(self):
