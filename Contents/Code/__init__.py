@@ -755,13 +755,13 @@ class AudiobookAlbum(Agent.Album):
         date = None
         rating = None
         series = ''
-        series2=''
-        series_def=''
+        series2 = ''
+        series_def = ''
         genre1 = None
         genre2 = None
         volume = ''
-        volume2=''
-        volume_def=''
+        volume2 = ''
+        volume_def = ''
 
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
             date = self.getDateFromString(
@@ -983,6 +983,11 @@ class AudiobookAlbum(Agent.Album):
         # Set the date and year if found.
         if date is not None:
             metadata.originally_available_at = date
+
+        # Add the genres
+        metadata.genres.clear()
+        metadata.genres.add(genre1)
+        metadata.genres.add(genre2)
 
         # Add Narrators to Styles
         narrators_list = narrator.split(",")
