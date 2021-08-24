@@ -533,7 +533,7 @@ class AudiobookAlbum(Agent.Album):
                 Log(
                     'Custom album search for: ' + media.name
                 )
-            media.album = media.name
+                media.album = media.name
         else:
             Log('Album search: ' + media.title)
 
@@ -994,7 +994,7 @@ class AudiobookAlbum(Agent.Album):
             ]:
                 metadata.styles.add(narrators.strip())
 
-        # Add Narrators to Moods
+        # Add Authors to Moods
         author_list = author.split(",")
         contributers_list = [
             'contributor',
