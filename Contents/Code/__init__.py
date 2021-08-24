@@ -58,12 +58,6 @@ intl_sites = {
         'rel_date': u'Data di Pubblicazione',
         'nar_by': u'Narratore'
     },
-    # untested
-    # 'jp': {
-        # 'url': 'www.audible.co.jp',
-        # 'rel_date': u'N/A',
-        # 'nar_by': u'ナレーター'
-    # },
 }
 
 sites_langs = {
@@ -326,7 +320,12 @@ class AudiobookArtist(Agent.Artist):
 
 class AudiobookAlbum(Agent.Album):
     name = 'Audiobooks'
-    languages = [Locale.Language.English, 'de', 'fr', 'it']
+    languages = [
+        Locale.Language.English,
+        'de',
+        'fr',
+        'it'
+    ]
     primary_provider = True
     accepts_from = ['com.plexapp.agents.localmedia']
 
@@ -499,7 +498,7 @@ class AudiobookAlbum(Agent.Album):
         self.Log(
             '-------------------------------------------------'
             '-------------------------------------------------'
-    )
+        )
 
         # Handle a couple of edge cases where
         # album search will give bad results.
@@ -507,7 +506,10 @@ class AudiobookAlbum(Agent.Album):
             self.Log('Album Title is NULL on an automatic search.  Returning')
             return
         if media.album == '[Unknown Album]' and not manual:
-            self.Log('Album Title is [Unknown Album] on an automatic search.  Returning')
+            self.Log(
+                'Album Title is [Unknown Album]'
+                ' on an automatic search.  Returning'
+            )
             return
 
         if manual:
@@ -528,7 +530,7 @@ class AudiobookAlbum(Agent.Album):
             # If this is a custom search,
             # use the user-entered name instead of the scanner hint.
             Log(
-                'Custom album search for: ' + media.album
+                'Custom album search for: ' + media.name
             )
             media.album = media.name
         else:
@@ -542,7 +544,7 @@ class AudiobookAlbum(Agent.Album):
         self.Log('* ID:              %s', media.parent_metadata.id)
         self.Log('* Title:           %s', media.title)
         self.Log('* Name:            %s', media.name)
-        self.Log('* Name:            %s', media.album)
+        self.Log('* Album:            %s', media.album)
         self.Log(
             '-----------------------------------'
             '------------------------------------'
@@ -815,14 +817,11 @@ class AudiobookAlbum(Agent.Album):
             )
 
         if date is None:
-            # for r in html.xpath('//div[contains (@class,"slot bottomSlot")]/script[contains (@type, "application/ld+json")]'):
             for r in html.xpath(
                 '//script[contains (@type, "application/ld+json")]'
             ):
                 page_content = r.text_content()
                 page_content = page_content.replace('\n', '')
-                # page_content = page_content.replace('\'', '\\\'')
-                # page_content = re.sub(r'\\(?![bfnrtv\'\"\\])', '', page_content)
                 # Remove any backslashes that aren't
                 # escaping a character JSON needs escaped
                 remove_inv_json_esc = re.compile(
@@ -833,8 +832,6 @@ class AudiobookAlbum(Agent.Album):
                 json_data = json_decode(page_content)
                 for json_data in json_data:
                     if 'datePublished' in json_data:
-                        # for key in json_data:
-                        #    Log('{0}:{1}'.format(key, json_data[key]))
                         date = json_data['datePublished']
                         title = json_data['name']
                         thumb = json_data['image']
@@ -860,8 +857,6 @@ class AudiobookAlbum(Agent.Album):
                         studio = json_data['publisher']
                         synopsis = json_data['description']
                     if 'itemListElement' in json_data:
-                        # for key in json_data:
-                        #    Log('{0}:{1}'.format(key, json_data[key]))
                         genre1 = (
                             json_data['itemListElement'][1]['item']['name']
                         )
