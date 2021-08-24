@@ -755,8 +755,13 @@ class AudiobookAlbum(Agent.Album):
         date = None
         rating = None
         series = ''
+        series2=''
+        series_def=''
         genre1 = None
         genre2 = None
+        volume = ''
+        volume2=''
+        volume_def=''
 
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
             date = self.getDateFromString(
@@ -831,12 +836,14 @@ class AudiobookAlbum(Agent.Album):
                     if 'datePublished' in json_data:
                         # for key in json_data:
                         #    Log('{0}:{1}'.format(key, json_data[key]))
-                        date = self.getDateFromString(
-                            json_data['datePublished']
-                        )
+                        date = json_data['datePublished']
                         title = json_data['name']
                         thumb = json_data['image']
-                        rating = json_data['aggregateRating']['ratingValue']
+                        # Set rating when available
+                        if 'aggregateRating' in json_data:
+                            rating = (
+                                json_data['aggregateRating']['ratingValue']
+                            )
                         author = ''
                         counter = 0
                         for c in json_data['author']:
@@ -866,11 +873,74 @@ class AudiobookAlbum(Agent.Album):
                         except:
                             continue
 
-            for r in html.xpath('//li[contains (@class, "seriesLabel")]'):
+            # prefer copyright year over datePublished
+            if Prefs['copyyear']:
+                cstring = None
+
+                for r in html.xpath(u'//span[contains(text(), "\xA9")]'):
+                    cstring = self.getStringContentFromXPath(
+                        r, u'normalize-space(//span[contains(text(), "\xA9")])'
+                    )
+                    # only contains Audible copyright
+                    if cstring.startswith(u"\xA9 "):
+                        cstring = ""
+                        date = date[:4]
+
+                if cstring:
+                    if "Public Domain" in cstring:
+                        date = re.match(".*\(P\)(\d{4})", cstring).group(1)
+                    else:
+                        if cstring.startswith(u'\xA9'):
+                            cstring = cstring[1:]
+                        if "(P)" in cstring:
+                            cstring = re.match("(.*)\(P\).*", cstring).group(1)
+                        if ";" in cstring:
+                            date = str(
+                                min(
+                                    [int(i) for i in cstring.split() if i.isdigit()]
+                                )
+                            )
+                        else:
+                            date = re.match(".?(\d{4}).*", cstring).group(1)
+
+            date = self.getDateFromString(date)
+
+            for r in html.xpath('//span[contains(@class, "seriesLabel")]'):
                 series = self.getStringContentFromXPath(
-                    r, '//li[contains (@class, "seriesLabel")]//a[1]'
+                    r, '//li[contains(@class, "seriesLabel")]//a[1]'
                 )
-                # Log(series.strip())
+                series2 = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]//a[2]'
+                )
+
+                series_def = series2 if series2 else series
+
+                volume = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]/text()[2]'
+                ).strip()
+                if volume == ",":
+                    volume = ""
+                volume2 = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]/text()[3]'
+                ).strip()
+                if volume2 == ",":
+                    volume2 = ""
+
+                volume_def = volume2 if volume2 else volume
+
+            # fix series when audible 'forgets' the series link…
+            if not series_def:
+                for r in html.xpath('//div[contains(@class, "adbl-main")]'):
+                    subtitle = self.getStringContentFromXPath(
+                        r, 'normalize-space(//li[contains'
+                        '(@class, "authorLabel")]'
+                        '//preceding::li[1]//span//text())'
+                    ).strip()
+
+                w = re.match("(.*)(, Book \d+)", subtitle)
+                if not series_def and w:
+                    series_def = w.group(1)
+                    volume_def = w.group(2)
 
         # cleanup synopsis
         synopsis = synopsis.replace("<i>", "")
@@ -903,26 +973,90 @@ class AudiobookAlbum(Agent.Album):
         self.Log('rating:      %s', rating)
         self.Log('genres:      %s, %s', genre1, genre2)
         self.Log('synopsis:    %s', synopsis)
+        self.Log('Series:      %s', series)
+        self.Log('Volume:      %s', volume)
+        self.Log('Series2:     %s', series2)
+        self.Log('Volume2:     %s', volume2)
+        self.Log('Series_def:  %s', series_def)
+        self.Log('Volume_def:  %s', volume_def)
 
         # Set the date and year if found.
         if date is not None:
             metadata.originally_available_at = date
-        # Add the genres
-        #       metadata.genres.clear()
+
+        # Add Narrators to Styles
         narrators_list = narrator.split(",")
+        contributors_list = ['full cast']
+        metadata.styles.clear()
         for narrators in narrators_list:
-            metadata.styles.add(narrators)
-        #	        metadata.genres.add(narrators)
-        #       metadata.genres.add(genre1)
-        #       metadata.genres.add(genre2)
-        #		metadata.title = title
+            if not [
+                item for item in contributors_list if item in narrators.lower()
+            ]:
+                metadata.styles.add(narrators.strip())
+
+        # Add Narrators to Moods
+        author_list = author.split(",")
+        contributers_list = [
+            'contributor',
+            'translator',
+            'foreword',
+            'translated',
+            'full cast',
+        ]
+        metadata.moods.clear()
+        for authors in author_list:
+            metadata.moods.add(authors.strip())
+            for contributors in contributers_list:
+                if not [
+                    item for item in contributers_list if item in authors.lower()
+                ]:
+                    metadata.moods.add(authors)
+
+        # Clean series
+        x = re.match("(.*)(: A .* Series)", series_def)
+        if x:
+            series_def = x.group(1)
+
+        # Clean title
+        seriesshort = series_def
+        checkseries = " Series"
+        # Handle edge cases in titles
+        if series_def.endswith(checkseries):
+            seriesshort = series_def[:-len(checkseries)]
+
+            y = re.match(
+                "(.*)((: .* " + volume_def[2:] + ": A .* Series)|"
+                "(((:|,|-) )((" + seriesshort + volume_def + ")|"
+                "((?<!" + seriesshort + ", )(" + volume_def[2:] + "))|"
+                "((The .*|Special) Edition)|"
+                "((?<!" + volume_def[2:] + ": )An? .* "
+                "(Adventure|Novella|Series|Saga))|"
+                "(A Novel of the .*))|"
+                "( \(" + seriesshort + ", Book \d+; .*\))))$",
+                title
+            )
+
+            if y:
+                title = y.group(1)
+
+        # Other metadata
+        metadata.title = title
+        metadata.title_sort = ' - '.join(
+            filter(None, [(series_def + volume_def), title])
+        )
         metadata.studio = studio
         metadata.summary = synopsis
-        #       metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
-        #       metadata.posters.validate_keys(thumb)
-        metadata.rating = float(rating) * 2
-        #       metadata.title = title
-        #       media.artist = author
+        # Use rating only when available
+        if rating:
+            metadata.rating = float(rating) * 2
+
+        # Collections if/when Plex supports them
+        # https://github.com/seanap/Audiobooks.bundle/issues/1#issuecomment-713191070
+        metadata.collections.clear()
+        metadata.collections.add(series)
+        if series2:
+            metadata.collections.add(series2)
+        # media.artist = author
         self.writeInfo('New data', url, metadata)
 
     def hasProxy(self):
@@ -981,6 +1115,16 @@ class AudiobookAlbum(Agent.Album):
             self.Log('|\\')
             for i in range(len(metadata.genres)):
                 self.Log('| * Genre:         %s', metadata.genres[i])
+
+        if len(metadata.moods) > 0:
+            self.Log('|\\')
+            for i in range(len(metadata.moods)):
+                self.Log('| * Moods:         %s', metadata.moods[i])
+
+        if len(metadata.styles) > 0:
+            self.Log('|\\')
+            for i in range(len(metadata.styles)):
+                self.Log('| * Styles:        %s', metadata.styles[i])
 
         if len(metadata.posters) > 0:
             self.Log('|\\')
