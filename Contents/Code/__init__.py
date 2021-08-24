@@ -15,7 +15,7 @@ def json_decode(output):
 
 
 # URLs
-VERSION_NO = '1.2019.07.29.1'
+VERSION_NO = '1.2021.08.24.1'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -528,9 +528,8 @@ class AudiobookAlbum(Agent.Album):
             # If this is a custom search,
             # use the user-entered name instead of the scanner hint.
             Log(
-                'Custom album search for: ' + media.name
+                'Custom album search for: ' + media.album
             )
-            # media.title = media.name
             media.album = media.name
         else:
             Log('Album search: ' + media.title)
