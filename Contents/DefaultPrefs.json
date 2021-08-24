@@ -10,7 +10,7 @@
     "default" : "www.audible.com"
 },{
 	"id": "copyyear",
-	"label": "User copyright year instead of datePublished",
+	"label": "Uses copyright year instead of datePublished",
 	"type": "bool",
 	"default": "false"
 },{
