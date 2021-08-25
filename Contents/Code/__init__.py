@@ -15,22 +15,49 @@ def json_decode(output):
 
 
 # URLs
-VERSION_NO = '1.2019.07.29.1'
+VERSION_NO = '1.2021.08.24.1'
 
-REQUEST_DELAY = 10  # Delay used when requesting HTML, may be good to have to prevent being banned from the site
+# Delay used when requesting HTML,
+# may be good to have to prevent being banned from the site
+REQUEST_DELAY = 10
 
-INITIAL_SCORE = 100  # Starting value for score before deductions are taken.
-GOOD_SCORE = 98  # Score required to short-circuit matching and stop searching.
-IGNORE_SCORE = 45  # Any score lower than this will be ignored.
+# Starting value for score before deductions are taken.
+INITIAL_SCORE = 100
+# Score required to short-circuit matching and stop searching.
+GOOD_SCORE = 98
+# Any score lower than this will be ignored.
+IGNORE_SCORE = 45
 
 THREAD_MAX = 20
 
 intl_sites = {
-    'en': {'url': 'www.audible.com', 'urltitle': u'title=', 'rel_date': u'Release date', 'nar_by': u'Narrated By', 'nar_by2': u'Narrated by'},
-    'fr': {'url': 'www.audible.fr', 'urltitle': u'title=', 'rel_date': u'Date de publication', 'nar_by': u'Narrateur(s)', 'nar_by2': u'Lu par'},
-    'de': {'url': 'www.audible.de', 'urltitle': u'title=', 'rel_date': u'Erscheinungsdatum', 'nar_by': u'Gesprochen von', 'rel_date2': u'Veröffentlicht'},
-    'it': {'url': 'www.audible.it', 'urltitle': u'title=', 'rel_date': u'Data di Pubblicazione', 'nar_by': u'Narratore'},
-    # 'jp' : { 'url': 'www.audible.co.jp', 'rel_date' : u'N/A', 'nar_by' : u'ナレーター'     }, # untested
+    'en': {
+        'url': 'www.audible.com',
+        'urltitle': u'title=',
+        'rel_date': u'Release date',
+        'nar_by': u'Narrated By',
+        'nar_by2': u'Narrated by'
+    },
+    'fr': {
+        'url': 'www.audible.fr',
+        'urltitle': u'title=',
+        'rel_date': u'Date de publication',
+        'nar_by': u'Narrateur(s)',
+        'nar_by2': u'Lu par'
+    },
+    'de': {
+        'url': 'www.audible.de',
+        'urltitle': u'title=',
+        'rel_date': u'Erscheinungsdatum',
+        'nar_by': u'Gesprochen von',
+        'rel_date2': u'Veröffentlicht'
+    },
+    'it': {
+        'url': 'www.audible.it',
+        'urltitle': u'title=',
+        'rel_date': u'Data di Pubblicazione',
+        'nar_by': u'Narratore'
+    },
 }
 
 sites_langs = {
@@ -70,16 +97,37 @@ def SetupUrls(sitetype, base, lang='en'):
                 ctx['REL_DATE_INFO'] = ctx['REL_DATE']
                 ctx['NAR_BY'] = 'Narrated By'
                 ctx['NAR_BY_INFO'] = 'Narrated by'
-        Log('Sites language is : %s', lang)
-        Log('/******************************LANG DEBUGGING************************************/')
-        Log('/* REL_DATE = %s', ctx['REL_DATE'])
-        Log('/* REL_DATE_INFO = %s', ctx['REL_DATE_INFO'])
-        Log('/* NAR_BY = %s', ctx['NAR_BY'])
-        Log('/* NAR_BY_INFO = %s', ctx['NAR_BY_INFO'])
-        Log('/********************************************************************************/')
+        Log(
+            'Sites language is : %s', lang
+            )
+        Log(
+            '/************************************'
+            'LANG DEBUGGING'
+            '************************************/'
+            )
+        Log(
+            '/* REL_DATE = %s', ctx['REL_DATE']
+            )
+        Log(
+            '/* REL_DATE_INFO = %s', ctx['REL_DATE_INFO']
+            )
+        Log(
+            '/* NAR_BY = %s', ctx['NAR_BY']
+            )
+        Log(
+            '/* NAR_BY_INFO = %s', ctx['NAR_BY_INFO']
+            )
+        Log(
+            '/****************************************'
+            '****************************************/'
+            )
     else:
-        Log('Audible site will be chosen by library language')
-        Log('Library Language is %s', lang)
+        Log(
+            'Audible site will be chosen by library language'
+            )
+        Log(
+            'Library Language is %s', lang
+            )
         if base is None:
             base = 'www.audible.com'
         if lang in intl_sites:
@@ -103,18 +151,53 @@ def SetupUrls(sitetype, base, lang='en'):
 
     AUD_BASE_URL = 'https://' + str(base) + '/'
     AUD_TITLE_URL = urlsearchtitle
-    ctx['AUD_BOOK_INFO'] = AUD_BASE_URL + 'pd/%s?ipRedirectOverride=true'
-    ctx['AUD_ARTIST_SEARCH_URL'] = AUD_BASE_URL + 'search?searchAuthor=%s&ipRedirectOverride=true'
-    ctx['AUD_ALBUM_SEARCH_URL'] = AUD_BASE_URL + 'search?' + AUD_TITLE_URL + '%s&x=41&ipRedirectOverride=true'
-    ctx['AUD_KEYWORD_SEARCH_URL'] = AUD_BASE_URL + 'search?filterby=field-keywords&advsearchKeywords=%s&x=41&ipRedirectOverride=true'
-    ctx['AUD_SEARCH_URL'] = AUD_BASE_URL + 'search?' + AUD_TITLE_URL + '{0}&searchAuthor={1}&x=41&ipRedirectOverride=true'
+
+    AUD_BOOK_INFO_ARR = [
+        AUD_BASE_URL,
+        'pd/%s?ipRedirectOverride=true',
+    ]
+    ctx['AUD_BOOK_INFO'] = ''.join(AUD_BOOK_INFO_ARR)
+
+    AUD_ARTIST_SEARCH_URL_ARR = [
+        AUD_BASE_URL,
+        'search?searchAuthor=%s&ipRedirectOverride=true',
+    ]
+    ctx['AUD_ARTIST_SEARCH_URL'] = ''.join(AUD_ARTIST_SEARCH_URL_ARR)
+
+    AUD_ALBUM_SEARCH_URL_ARR = [
+        AUD_BASE_URL,
+        'search?',
+        AUD_TITLE_URL,
+        '%s&x=41&ipRedirectOverride=true',
+    ]
+    ctx['AUD_ALBUM_SEARCH_URL'] = ''.join(AUD_ALBUM_SEARCH_URL_ARR)
+
+    AUD_KEYWORD_SEARCH_URL_ARR = [
+        AUD_BASE_URL,
+        ('search?filterby=field-keywords&advsearchKeywords=%s'
+            '&x=41&ipRedirectOverride=true'),
+    ]
+    ctx['AUD_KEYWORD_SEARCH_URL'] = ''.join(AUD_KEYWORD_SEARCH_URL_ARR)
+
+    AUD_SEARCH_URL_ARR = [
+        AUD_BASE_URL,
+        'search?',
+        AUD_TITLE_URL,
+        '{0}&searchAuthor={1}&x=41&ipRedirectOverride=true',
+    ]
+    ctx['AUD_SEARCH_URL'] = ''.join(AUD_SEARCH_URL_ARR)
+
     return ctx
 
 
 def Start():
     # HTTP.ClearCache()
     HTTP.CacheTime = CACHE_1WEEK
-    HTTP.Headers['User-agent'] = 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0)'
+    HTTP.Headers['User-agent'] = (
+        'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0;'
+        'SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729;'
+        'Media Center PC 6.0'
+    )
     HTTP.Headers['Accept-Encoding'] = 'gzip'
 
 
@@ -168,12 +251,16 @@ class AudiobookArtist(Agent.Artist):
         found = []
 
         for r in html.xpath('//div[a/img[@class="yborder"]]'):
-            date = self.getDateFromString(self.getStringContentFromXPath(r, 'text()[1]'))
+            date = self.getDateFromString(
+                self.getStringContentFromXPath(r, 'text()[1]')
+            )
             title = self.getStringContentFromXPath(r, 'a[2]')
             murl = self.getAnchorUrlFromXPath(r, 'a[2]')
             thumb = self.getImageUrlFromXPath(r, 'a/img')
 
-            found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb})
+            found.append(
+                {'url': murl, 'title': title, 'date': date, 'thumb': thumb}
+            )
 
         return found
 
@@ -184,11 +271,26 @@ class AudiobookArtist(Agent.Artist):
         # author source is identified.
 
         # Log some stuff
-        self.Log('---------------------------------ARTIST SEARCH--------------------------------------------------')
-        self.Log('* Album:           %s', media.album)
-        self.Log('* Artist:           %s', media.artist)
-        self.Log('****************************************Not Ready For Artist Search Yet*************************')
-        self.Log('------------------------------------------------------------------------------------------------')
+        self.Log(
+            '------------------------------------------------'
+            'ARTIST SEARCH'
+            '------------------------------------------------'
+        )
+        self.Log(
+            '* Album:           %s', media.album
+        )
+        self.Log(
+            '* Artist:           %s', media.artist
+        )
+        self.Log(
+            '****************************************'
+            'Not Ready For Artist Search Yet'
+            '****************************************'
+        )
+        self.Log(
+            '------------------------------------------------'
+            '------------------------------------------------'
+        )
         return
 
     def update(self, metadata, media, lang, force=False):
@@ -218,7 +320,12 @@ class AudiobookArtist(Agent.Artist):
 
 class AudiobookAlbum(Agent.Album):
     name = 'Audiobooks'
-    languages = [Locale.Language.English, 'de', 'fr', 'it']
+    languages = [
+        Locale.Language.English,
+        'de',
+        'fr',
+        'it'
+    ]
     primary_provider = True
     accepts_from = ['com.plexapp.agents.localmedia']
 
@@ -262,32 +369,115 @@ class AudiobookAlbum(Agent.Album):
     def doSearch(self, url, ctx):
         html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         found = []
-        self.Log('-----------------------------------------just before new xpath line--------------------')
+        self.Log(
+            '-----------------------------------------'
+            'just before new xpath line'
+            '-----------------------------------------'
+            )
         for r in html.xpath('//ul//li[contains(@class,"productListItem")]'):
-            datetext = self.getStringContentFromXPath(r, u'div/div/div/div/div/div/span/ul/li[contains (@class,"releaseDateLabel")]/span')
+            datetext = self.getStringContentFromXPath(
+                r, (
+                    u'div/div/div/div/div/div/span/ul/li'
+                    '[contains (@class,"releaseDateLabel")]/span'
+                    )
+            )
             datetext = re.sub(r'[^0-9\-]', '', datetext)
             date = self.getDateFromString(datetext)
-            title = self.getStringContentFromXPath(r, 'div/div/div/div/div/div/span/ul//a[contains (@class,"bc-link")][1]')
-            murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/div/div/span/ul/li/h3//a[1]')
-            thumb = self.getImageUrlFromXPath(r, 'div/div/div/div/div/div/div[contains(@class,"responsive-product-square")]/div/a/img')
-            author = self.getStringContentFromXPath(r, 'div/div/div/div/div/div/span/ul/li[contains (@class,"authorLabel")]/span/a[1]')
-            narrator = self.getStringContentFromXPath(r, u'div/div/div/div/div/div/span/ul/li[contains (@class,"narratorLabel")]/span//a[1]'.format(ctx['NAR_BY']))
-            self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
+            title = self.getStringContentFromXPath(
+                r, (
+                    'div/div/div/div/div/div/span/ul//a'
+                    '[contains (@class,"bc-link")][1]'
+                    )
+            )
+            murl = self.getAnchorUrlFromXPath(
+                r, 'div/div/div/div/div/div/span/ul/li/h3//a[1]'
+            )
+            thumb = self.getImageUrlFromXPath(
+                r, 'div/div/div/div/div/div/div'
+                '[contains(@class,"responsive-product-square")]/div/a/img'
+            )
+            author = self.getStringContentFromXPath(
+                r, (
+                    'div/div/div/div/div/div/span/ul'
+                    '/li[contains (@class,"authorLabel")]/span/a[1]'
+                )
+            )
+            narrator = self.getStringContentFromXPath(
+                r, (
+                    u'div/div/div/div/div/div/span/ul/li'
+                    '[contains (@class,"narratorLabel")]/span//a[1]'
+                ).format(ctx['NAR_BY'])
+            )
+            self.Log(
+                '-----------------------------------------------'
+                'XPATH SEARCH HIT'
+                '-----------------------------------------------'
+            )
 
-            found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb, 'author': author, 'narrator': narrator})
+            found.append(
+                {
+                    'url': murl,
+                    'title': title,
+                    'date': date,
+                    'thumb': thumb,
+                    'author': author,
+                    'narrator': narrator
+                }
+            )
 
-        self.Log('-----------------------------------------just after new xpath line--------------------')
+        self.Log(
+            '-----------------------------------------'
+            'just after new xpath line'
+            '-----------------------------------------'
+            )
 
         for r in html.xpath('//div[contains (@class, "adbl-search-result")]'):
-            date = self.getDateFromString(self.getStringContentFromXPath(r, u'div/div/ul/li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE'])))
-            title = self.getStringContentFromXPath(r, 'div/div/div/div/a[1]')
-            murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/a[1]')
-            thumb = self.getImageUrlFromXPath(r, 'div[contains (@class,"adbl-prod-image-sample-cont")]/a/img')
-            author = self.getStringContentFromXPath(r, 'div/div/ul/li//a[contains (@class,"author-profile-link")][1]')
-            narrator = self.getStringContentFromXPath(r, u'div/div/ul/li[contains (., "{0}")]//a[1]'.format(ctx['NAR_BY']))
-            self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
+            date = self.getDateFromString(
+                self.getStringContentFromXPath(
+                    r, (
+                        u'div/div/ul/li[contains (., "{0}")]'
+                        '/span[2]//text()'
+                        ).format(
+                        ctx['REL_DATE']
+                    )
+                )
+            )
+            title = self.getStringContentFromXPath(
+                r, 'div/div/div/div/a[1]'
+            )
+            murl = self.getAnchorUrlFromXPath(
+                r, 'div/div/div/div/a[1]'
+            )
+            thumb = self.getImageUrlFromXPath(
+                r, 'div[contains (@class,"adbl-prod-image-sample-cont")]/a/img'
+            )
+            author = self.getStringContentFromXPath(
+                r, (
+                        'div/div/ul/li/'
+                        '/a[contains (@class,"author-profile-link")][1]'
+                    )
+            )
+            narrator = self.getStringContentFromXPath(
+                r, u'div/div/ul/li[contains (., "{0}")]//a[1]'.format(
+                    ctx['NAR_BY']
+                )
+            )
+            self.Log(
+                '-----------------------------------------------'
+                'XPATH SEARCH HIT'
+                '-----------------------------------------------'
+            )
 
-            found.append({'url': murl, 'title': title, 'date': date, 'thumb': thumb, 'author': author, 'narrator': narrator})
+            found.append(
+                {
+                    'url': murl,
+                    'title': title,
+                    'date': date,
+                    'thumb': thumb,
+                    'author': author,
+                    'narrator': narrator
+                }
+            )
 
         return found
 
@@ -295,65 +485,109 @@ class AudiobookAlbum(Agent.Album):
         ctx = SetupUrls(Prefs['sitetype'], Prefs['site'], lang)
         LCL_IGNORE_SCORE = IGNORE_SCORE
 
-        self.Log('---------------------------------------ALBUM SEARCH-----------------------------------------------')
+        self.Log(
+            '-----------------------------------------------'
+            'ALBUM SEARCH'
+            '-----------------------------------------------'
+        )
         self.Log('* ID:              %s', media.parent_metadata.id)
         self.Log('* Title:           %s', media.title)
         self.Log('* Name:            %s', media.name)
         self.Log('* Album:           %s', media.album)
         self.Log('* Artist:          %s', media.artist)
-        self.Log('--------------------------------------------------------------------------------------------------')
+        self.Log(
+            '-------------------------------------------------'
+            '-------------------------------------------------'
+        )
 
-        # Handle a couple of edge cases where album search will give bad results.
+        # Handle a couple of edge cases where
+        # album search will give bad results.
         if media.album is None and not manual:
             self.Log('Album Title is NULL on an automatic search.  Returning')
             return
         if media.album == '[Unknown Album]' and not manual:
-            self.Log('Album Title is [Unknown Album] on an automatic search.  Returning')
+            self.Log(
+                'Album Title is [Unknown Album]'
+                ' on an automatic search.  Returning'
+            )
             return
 
         if manual:
-            Log('You clicked \'fix match\'. This may have returned no useful results because it\'s searching using the title of the first track.')
-            Log('There\'s not currently a way around this initial failure. But clicking \'Search Options\' and entering the title works just fine.')
-            Log('This message will appear during the initial search and the actual manual search.')
-            # If this is a custom search, use the user-entered name instead of the scanner hint.
-            Log('Custom album search for: ' + media.name)
-            # media.title = media.name
-            media.album = media.name
+            Log(
+                'You clicked \'fix match\'. '
+                'This may have returned no useful results because '
+                'it\'s searching using the title of the first track.'
+            )
+            Log(
+                'There\'s not currently a way around this initial failure. '
+                'But clicking \'Search Options\' and '
+                'entering the title works just fine.'
+            )
+            Log(
+                'This message will appear during the initial '
+                'search and the actual manual search.'
+            )
+            # If this is a custom search,
+            # use the user-entered name instead of the scanner hint.
+            if media.name:
+                Log(
+                    'Custom album search for: ' + media.name
+                )
+                media.album = media.name
         else:
             Log('Album search: ' + media.title)
 
         # Log some stuff for troubleshooting detail
-        self.Log('-----------------------------------------------------------------------')
+        self.Log(
+            '-----------------------------------'
+            '------------------------------------'
+        )
         self.Log('* ID:              %s', media.parent_metadata.id)
         self.Log('* Title:           %s', media.title)
         self.Log('* Name:            %s', media.name)
-        self.Log('* Name:            %s', media.album)
-        self.Log('-----------------------------------------------------------------------')
+        self.Log('* Album:           %s', media.album)
+        self.Log(
+            '-----------------------------------'
+            '------------------------------------'
+        )
 
         # Normalize the name
         normalizedName = String.StripDiacritics(media.album)
         if len(normalizedName) == 0:
             normalizedName = media.album
-        Log('normalizedName = %s', normalizedName)
+        Log(
+            'normalizedName = %s', normalizedName
+        )
 
         # Chop off "unabridged"
         normalizedName = re.sub(r"[\(\[].*?[\)\]]", "", normalizedName)
-        Log('chopping bracketed text = %s', normalizedName)
+        Log(
+            'chopping bracketed text = %s', normalizedName
+        )
         normalizedName = normalizedName.strip()
-        Log('normalizedName stripped = %s', normalizedName)
+        Log(
+            'normalizedName stripped = %s', normalizedName
+        )
 
-        self.Log('***** SEARCHING FOR "%s" - AUDIBLE v.%s *****', normalizedName, VERSION_NO)
+        self.Log(
+            '***** SEARCHING FOR "%s" - AUDIBLE v.%s *****',
+            normalizedName, VERSION_NO
+        )
 
         # Make the URL
-        match = re.search("(?P<book_title>.*?)\[(?P<source>(audible))-(?P<guid>B[a-zA-Z0-9]{9,9})\]", media.title, re.IGNORECASE)
-        if match:  ###metadata id provided
-            Log('Looks like you went through the trouble of adding the audible ID to the Book title...')
-            searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (String.Quote((match.group('guid')).encode('utf-8'), usePlus=True))
-            LCL_IGNORE_SCORE = 0
-        elif media.artist is not None:
-            searchUrl = ctx['AUD_SEARCH_URL'].format((String.Quote((normalizedName).encode('utf-8'), usePlus=True)), (String.Quote((media.artist).encode('utf-8'), usePlus=True)))
+        if media.artist is not None:
+            searchUrl = ctx['AUD_SEARCH_URL'].format(
+                (
+                    String.Quote((normalizedName).encode('utf-8'), usePlus=True)
+                ),
+                (
+                    String.Quote((media.artist).encode('utf-8'), usePlus=True)
+                )
+            )
         else:
-            searchUrl = ctx['AUD_ALBUM_SEARCH_URL'] % (String.Quote((normalizedName).encode('utf-8'), usePlus=True))
+            searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (
+                String.Quote((normalizedName).encode('utf-8'), usePlus=True)
+            )
         found = self.doSearch(searchUrl, ctx)
 
         # Write search result status to log
@@ -361,13 +595,23 @@ class AudiobookAlbum(Agent.Album):
             self.Log('No results found for query "%s"', normalizedName)
             return
         else:
-            self.Log('Found %s result(s) for query "%s"', len(found), normalizedName)
+            self.Log(
+                'Found %s result(s) for query "%s"', len(found), normalizedName
+            )
             i = 1
             for f in found:
-                self.Log('    %s. (title) %s (author) %s (url)[%s] (date)(%s) (thumb){%s}', i, f['title'], f['author'], f['url'], str(f['date']), f['thumb'])
+                self.Log(
+                    '    %s. (title) %s (author) %s (url)[%s]'
+                    ' (date)(%s) (thumb){%s}',
+                    i, f['title'], f['author'],
+                    f['url'], str(f['date']), f['thumb']
+                )
                 i += 1
 
-        self.Log('-----------------------------------------------------------------------')
+        self.Log(
+            '-----------------------------------'
+            '------------------------------------'
+        )
         # Walk the found items and gather extended information
         info = []
         i = 1
@@ -377,13 +621,15 @@ class AudiobookAlbum(Agent.Album):
 
             # Get the id
             for itemId in url.split('/'):
-                if re.match(r'^[0-9A-Z]{10,10}', itemId):  # IDs No longer start with just 'B0'
+                # IDs No longer start with just 'B0'
+                if re.match(r'^[0-9A-Z]{10,10}', itemId):
                     break
                 itemId = None
 
             # New Search results contain question marks after the ID
             for itemId in itemId.split('?'):
-                if re.match(r'^[0-9A-Z]{10,10}', itemId):  # IDs No longer start with just 'B0'
+                # IDs No longer start with just 'B0'
+                if re.match(r'^[0-9A-Z]{10,10}', itemId):
                     break
 
             if len(itemId) == 0:
@@ -408,14 +654,18 @@ class AudiobookAlbum(Agent.Album):
             # self.Log('scorebase1:    %s', scorebase1)
             # self.Log('scorebase2:    %s', scorebase2)
 
-            score = INITIAL_SCORE - Util.LevenshteinDistance(scorebase1, scorebase2)
+            score = INITIAL_SCORE - Util.LevenshteinDistance(
+                scorebase1, scorebase2
+            )
 
             if media.artist:
                 scorebase3 = media.artist
                 scorebase4 = author
                 # self.Log('scorebase3:    %s', scorebase3)
                 # self.Log('scorebase4:    %s', scorebase4)
-                score = INITIAL_SCORE - Util.LevenshteinDistance(scorebase3, scorebase4)
+                score = INITIAL_SCORE - Util.LevenshteinDistance(
+                    scorebase3, scorebase4
+                )
 
             self.Log('* Title is              %s', title)
             self.Log('* Author is             %s', author)
@@ -425,34 +675,75 @@ class AudiobookAlbum(Agent.Album):
             self.Log('* Thumb is              %s', thumb)
 
             if score >= LCL_IGNORE_SCORE:
-                info.append({'id': itemId, 'title': title, 'year': year, 'date': date, 'score': score, 'thumb': thumb, 'artist': author})
+                info.append(
+                    {
+                        'id': itemId,
+                        'title': title,
+                        'year': year,
+                        'date': date,
+                        'score': score,
+                        'thumb': thumb,
+                        'artist': author
+                    }
+                )
             else:
-                self.Log('# Score is below ignore boundary (%s)... Skipping!', LCL_IGNORE_SCORE)
+                self.Log(
+                    '# Score is below ignore boundary (%s)... Skipping!',
+                    LCL_IGNORE_SCORE
+                )
 
             if i != len(found):
-                self.Log('-----------------------------------------------------------------------')
+                self.Log(
+                    '-----------------------------------'
+                    '------------------------------------'
+                )
 
             i += 1
 
         info = sorted(info, key=lambda inf: inf['score'], reverse=True)
 
         # Output the final results.
-        self.Log('***********************************************************************')
+        self.Log(
+            '***********************************'
+            '************************************'
+        )
         self.Log('Final result:')
         i = 1
         for r in info:
-            description = '\"%s\" by %s [%s]' % (r['title'], r['artist'], r['year'])
-            self.Log('    [%s]    %s. %s (%s) %s {%s} [%s]', r['score'], i, r['title'], r['year'], r['artist'], r['id'], r['thumb'])
-            results.Append(MetadataSearchResult(id=r['id'], name=description, score=r['score'], thumb=r['thumb'], lang=lang))
+            description = '\"%s\" by %s [%s]' % (
+                r['title'], r['artist'], r['year']
+            )
+            self.Log(
+                '    [%s]    %s. %s (%s) %s {%s} [%s]',
+                r['score'], i, r['title'], r['year'],
+                r['artist'], r['id'], r['thumb']
+            )
+            results.Append(
+                MetadataSearchResult(
+                    id=r['id'],
+                    name=description,
+                    score=r['score'],
+                    thumb=r['thumb'],
+                    lang=lang
+                )
+            )
 
-            # If there are more than one result, and this one has a score that is >= GOOD SCORE, then ignore the rest of the results
+            # If there are more than one result,
+            # and this one has a score that is >= GOOD SCORE,
+            # then ignore the rest of the results
             if not manual and len(info) > 1 and r['score'] >= GOOD_SCORE:
-                self.Log('            *** The score for these results are great, so we will use them, and ignore the rest. ***')
+                self.Log(
+                    '            *** The score for these results are great, '
+                    'so we will use them, and ignore the rest. ***'
+                )
                 break
             i += 1
 
     def update(self, metadata, media, lang, force=False):
-        self.Log('***** UPDATING "%s" ID: %s - AUDIBLE v.%s *****', media.title, metadata.id, VERSION_NO)
+        self.Log(
+            '***** UPDATING "%s" ID: %s - AUDIBLE v.%s *****',
+            media.title, metadata.id, VERSION_NO
+        )
         ctx = SetupUrls(Prefs['sitetype'], Prefs['site'], lang)
 
         # Make url
@@ -466,43 +757,90 @@ class AudiobookAlbum(Agent.Album):
         date = None
         rating = None
         series = ''
+        series2 = ''
+        series_def = ''
         genre1 = None
         genre2 = None
+        volume = ''
+        volume2 = ''
+        volume_def = ''
 
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
-            date = self.getDateFromString(self.getStringContentFromXPath(r, u'//li[contains (., "{0}")]/span[2]//text()'.format(ctx['REL_DATE_INFO'])))
-            title = self.getStringContentFromXPath(r, '//h1[contains (@class, "adbl-prod-h1-title")]/text()')
-            murl = self.getAnchorUrlFromXPath(r, 'div/div/div/div/a[1]')
-            thumb = self.getImageUrlFromXPath(r, 'div/div/div/div/div/img')
-            author = self.getStringContentFromXPath(r, '//li//a[contains (@class,"author-profile-link")][1]')
-            narrator = self.getStringContentFromXPath(r, '//li[contains (., "{0}")]//span[2]'.format(ctx['NAR_BY_INFO'])).strip().decode('utf-8')
-            studio = self.getStringContentFromXPath(r, '//li//a[contains (@id,"PublisherSearchLink")][1]')
-            synopsis = self.getStringContentFromXPath(r, '//div[contains (@class, "disc-summary")]/div[*]').strip()
-            series = self.getStringContentFromXPath(r, '//div[contains (@class, "adbl-series-link")]//a[1]')
-            genre1 = self.getStringContentFromXPath(r, '//div[contains(@class,"adbl-pd-breadcrumb")]/div[2]/a/span/text()')
-            genre2 = self.getStringContentFromXPath(r, '//div[contains(@class,"adbl-pd-breadcrumb")]/div[3]/a/span/text()')
-            self.Log('---------------------------------------XPATH SEARCH HIT-----------------------------------------------')
+            date = self.getDateFromString(
+                self.getStringContentFromXPath(
+                    r, u'//li[contains (., "{0}")]/span[2]//text()'.format(
+                        ctx['REL_DATE_INFO']
+                    )
+                )
+            )
+            title = self.getStringContentFromXPath(
+                r, '//h1[contains (@class, "adbl-prod-h1-title")]/text()'
+            )
+            murl = self.getAnchorUrlFromXPath(
+                r, 'div/div/div/div/a[1]'
+            )
+            thumb = self.getImageUrlFromXPath(
+                r, 'div/div/div/div/div/img'
+            )
+            author = self.getStringContentFromXPath(
+                r, '//li//a[contains (@class,"author-profile-link")][1]'
+            )
+            narrator = self.getStringContentFromXPath(
+                r, '//li[contains (., "{0}")]//span[2]'.format(
+                    ctx['NAR_BY_INFO']
+                )
+            ).strip().decode('utf-8')
+            studio = self.getStringContentFromXPath(
+                r, '//li//a[contains (@id,"PublisherSearchLink")][1]'
+            )
+            synopsis = self.getStringContentFromXPath(
+                r, '//div[contains (@class, "disc-summary")]/div[*]'
+            ).strip()
+            series = self.getStringContentFromXPath(
+                r, '//div[contains (@class, "adbl-series-link")]//a[1]'
+            )
+            genre1 = self.getStringContentFromXPath(
+                r, (
+                    '//div[contains(@class,"adbl-pd-breadcrumb")]'
+                    '/div[2]/a/span/text()'
+                )
+            )
+            genre2 = self.getStringContentFromXPath(
+                r, (
+                    '//div[contains(@class,"adbl-pd-breadcrumb")]'
+                    '/div[3]/a/span/text()'
+                )
+            )
+            self.Log(
+                '-----------------------------------------------'
+                'XPATH SEARCH HIT'
+                '-----------------------------------------------'
+            )
 
         if date is None:
-            # for r in html.xpath('//div[contains (@class,"slot bottomSlot")]/script[contains (@type, "application/ld+json")]'):
-            for r in html.xpath('//script[contains (@type, "application/ld+json")]'):
+            for r in html.xpath(
+                '//script[contains (@type, "application/ld+json")]'
+            ):
                 page_content = r.text_content()
                 page_content = page_content.replace('\n', '')
-                # page_content = page_content.replace('\'', '\\\'')
-                # page_content = re.sub(r'\\(?![bfnrtv\'\"\\])', '', page_content)
-                # Remove any backslashes that aren't escaping a character JSON needs escaped
-                remove_inv_json_esc = re.compile(r'([^\\])(\\(?![bfnrt\'\"\\/]|u[A-Fa-f0-9]{4}))')
+                # Remove any backslashes that aren't
+                # escaping a character JSON needs escaped
+                remove_inv_json_esc = re.compile(
+                    r'([^\\])(\\(?![bfnrt\'\"\\/]|u[A-Fa-f0-9]{4}))'
+                )
                 page_content = remove_inv_json_esc.sub(r'\1\\\2', page_content)
                 self.Log(page_content)
                 json_data = json_decode(page_content)
                 for json_data in json_data:
                     if 'datePublished' in json_data:
-                        # for key in json_data:
-                        #    Log('{0}:{1}'.format(key, json_data[key]))
-                        date = self.getDateFromString(json_data['datePublished'])
+                        date = json_data['datePublished']
                         title = json_data['name']
                         thumb = json_data['image']
-                        rating = json_data['aggregateRating']['ratingValue']
+                        # Set rating when available
+                        if 'aggregateRating' in json_data:
+                            rating = (
+                                json_data['aggregateRating']['ratingValue']
+                            )
                         author = ''
                         counter = 0
                         for c in json_data['author']:
@@ -520,17 +858,84 @@ class AudiobookAlbum(Agent.Album):
                         studio = json_data['publisher']
                         synopsis = json_data['description']
                     if 'itemListElement' in json_data:
-                        # for key in json_data:
-                        #    Log('{0}:{1}'.format(key, json_data[key]))
-                        genre1 = json_data['itemListElement'][1]['item']['name']
+                        genre1 = (
+                            json_data['itemListElement'][1]['item']['name']
+                        )
                         try:
-                            genre2 = json_data['itemListElement'][2]['item']['name']
+                            genre2 = (
+                                json_data['itemListElement'][2]['item']['name']
+                            )
                         except:
                             continue
 
-            for r in html.xpath('//li[contains (@class, "seriesLabel")]'):
-                series = self.getStringContentFromXPath(r, '//li[contains (@class, "seriesLabel")]//a[1]')
-                # Log(series.strip())
+            # prefer copyright year over datePublished
+            if Prefs['copyyear']:
+                cstring = None
+
+                for r in html.xpath(u'//span[contains(text(), "\xA9")]'):
+                    cstring = self.getStringContentFromXPath(
+                        r, u'normalize-space(//span[contains(text(), "\xA9")])'
+                    )
+                    # only contains Audible copyright
+                    if cstring.startswith(u"\xA9 "):
+                        cstring = ""
+                        date = date[:4]
+
+                if cstring:
+                    if "Public Domain" in cstring:
+                        date = re.match(".*\(P\)(\d{4})", cstring).group(1)
+                    else:
+                        if cstring.startswith(u'\xA9'):
+                            cstring = cstring[1:]
+                        if "(P)" in cstring:
+                            cstring = re.match("(.*)\(P\).*", cstring).group(1)
+                        if ";" in cstring:
+                            date = str(
+                                min(
+                                    [int(i) for i in cstring.split() if i.isdigit()]
+                                )
+                            )
+                        else:
+                            date = re.match(".?(\d{4}).*", cstring).group(1)
+
+            date = self.getDateFromString(date)
+
+            for r in html.xpath('//span[contains(@class, "seriesLabel")]'):
+                series = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]//a[1]'
+                )
+                series2 = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]//a[2]'
+                )
+
+                series_def = series2 if series2 else series
+
+                volume = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]/text()[2]'
+                ).strip()
+                if volume == ",":
+                    volume = ""
+                volume2 = self.getStringContentFromXPath(
+                    r, '//li[contains(@class, "seriesLabel")]/text()[3]'
+                ).strip()
+                if volume2 == ",":
+                    volume2 = ""
+
+                volume_def = volume2 if volume2 else volume
+
+            # fix series when audible 'forgets' the series link…
+            if not series_def:
+                for r in html.xpath('//div[contains(@class, "adbl-main")]'):
+                    subtitle = self.getStringContentFromXPath(
+                        r, 'normalize-space(//li[contains'
+                        '(@class, "authorLabel")]'
+                        '//preceding::li[1]//span//text())'
+                    ).strip()
+
+                w = re.match("(.*)(, Book \d+)", subtitle)
+                if not series_def and w:
+                    series_def = w.group(1)
+                    volume_def = w.group(2)
 
         # cleanup synopsis
         synopsis = synopsis.replace("<i>", "")
@@ -563,26 +968,96 @@ class AudiobookAlbum(Agent.Album):
         self.Log('rating:      %s', rating)
         self.Log('genres:      %s, %s', genre1, genre2)
         self.Log('synopsis:    %s', synopsis)
+        self.Log('Series:      %s', series)
+        self.Log('Volume:      %s', volume)
+        self.Log('Series2:     %s', series2)
+        self.Log('Volume2:     %s', volume2)
+        self.Log('Series_def:  %s', series_def)
+        self.Log('Volume_def:  %s', volume_def)
 
         # Set the date and year if found.
         if date is not None:
             metadata.originally_available_at = date
+
         # Add the genres
-        #       metadata.genres.clear()
+        metadata.genres.clear()
+        metadata.genres.add(genre1)
+        metadata.genres.add(genre2)
+
+        # Add Narrators to Styles
         narrators_list = narrator.split(",")
+        contributors_list = ['full cast']
+        metadata.styles.clear()
         for narrators in narrators_list:
-            metadata.styles.add(narrators)
-        #	        metadata.genres.add(narrators)
-        #       metadata.genres.add(genre1)
-        #       metadata.genres.add(genre2)
-        #		metadata.title = title
+            if not [
+                item for item in contributors_list if item in narrators.lower()
+            ]:
+                metadata.styles.add(narrators.strip())
+
+        # Add Authors to Moods
+        author_list = author.split(",")
+        contributers_list = [
+            'contributor',
+            'translator',
+            'foreword',
+            'translated',
+            'full cast',
+        ]
+        metadata.moods.clear()
+        for authors in author_list:
+            metadata.moods.add(authors.strip())
+            for contributors in contributers_list:
+                if not [
+                    item for item in contributers_list if item in authors.lower()
+                ]:
+                    metadata.moods.add(authors)
+
+        # Clean series
+        x = re.match("(.*)(: A .* Series)", series_def)
+        if x:
+            series_def = x.group(1)
+
+        # Clean title
+        seriesshort = series_def
+        checkseries = " Series"
+        # Handle edge cases in titles
+        if series_def.endswith(checkseries):
+            seriesshort = series_def[:-len(checkseries)]
+
+            y = re.match(
+                "(.*)((: .* " + volume_def[2:] + ": A .* Series)|"
+                "(((:|,|-) )((" + seriesshort + volume_def + ")|"
+                "((?<!" + seriesshort + ", )(" + volume_def[2:] + "))|"
+                "((The .*|Special) Edition)|"
+                "((?<!" + volume_def[2:] + ": )An? .* "
+                "(Adventure|Novella|Series|Saga))|"
+                "(A Novel of the .*))|"
+                "( \(" + seriesshort + ", Book \d+; .*\))))$",
+                title
+            )
+
+            if y:
+                title = y.group(1)
+
+        # Other metadata
+        metadata.title = title
+        metadata.title_sort = ' - '.join(
+            filter(None, [(series_def + volume_def), title])
+        )
         metadata.studio = studio
         metadata.summary = synopsis
-        #       metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
-        #       metadata.posters.validate_keys(thumb)
-        metadata.rating = float(rating) * 2
-        #       metadata.title = title
-        #       media.artist = author
+        metadata.posters[1] = Proxy.Media(HTTP.Request(thumb))
+        metadata.posters.validate_keys(thumb)
+        # Use rating only when available
+        if rating:
+            metadata.rating = float(rating) * 2
+
+        # Collections if/when Plex supports them
+        # https://github.com/seanap/Audiobooks.bundle/issues/1#issuecomment-713191070
+        metadata.collections.clear()
+        metadata.collections.add(series)
+        if series2:
+            metadata.collections.add(series2)
         self.writeInfo('New data', url, metadata)
 
     def hasProxy(self):
@@ -606,16 +1081,31 @@ class AudiobookAlbum(Agent.Album):
     def addTask(self, queue, func, *args, **kargs):
         queue.put((func, args, kargs))
 
-    ### Writes metadata information to log.
+    # Writes metadata information to log.
     def writeInfo(self, header, url, metadata):
         self.Log(header)
-        self.Log('-----------------------------------------------------------------------')
-        self.Log('* ID:              %s', metadata.id)
-        self.Log('* URL:             %s', url)
-        self.Log('* Title:           %s', metadata.title)
-        self.Log('* Release date:    %s', str(metadata.originally_available_at))
-        self.Log('* Studio:          %s', metadata.studio)
-        self.Log('* Summary:         %s', metadata.summary)
+        self.Log(
+            '-----------------------------------'
+            '------------------------------------'
+        )
+        self.Log(
+            '* ID:              %s', metadata.id
+        )
+        self.Log(
+            '* URL:             %s', url
+        )
+        self.Log(
+            '* Title:           %s', metadata.title
+        )
+        self.Log(
+            '* Release date:    %s', str(metadata.originally_available_at)
+        )
+        self.Log(
+            '* Studio:          %s', metadata.studio
+        )
+        self.Log(
+            '* Summary:         %s', metadata.summary
+        )
 
         if len(metadata.collections) > 0:
             self.Log('|\\')
@@ -627,6 +1117,16 @@ class AudiobookAlbum(Agent.Album):
             for i in range(len(metadata.genres)):
                 self.Log('| * Genre:         %s', metadata.genres[i])
 
+        if len(metadata.moods) > 0:
+            self.Log('|\\')
+            for i in range(len(metadata.moods)):
+                self.Log('| * Moods:         %s', metadata.moods[i])
+
+        if len(metadata.styles) > 0:
+            self.Log('|\\')
+            for i in range(len(metadata.styles)):
+                self.Log('| * Styles:        %s', metadata.styles[i])
+
         if len(metadata.posters) > 0:
             self.Log('|\\')
             for poster in metadata.posters.keys():
@@ -637,7 +1137,10 @@ class AudiobookAlbum(Agent.Album):
             for art in metadata.art.keys():
                 self.Log('| * Fan art URL:   %s', art)
 
-        self.Log('***********************************************************************')
+        self.Log(
+            '***********************************'
+            '************************************'
+            )
 
 
 def safe_unicode(s, encoding='utf-8'):
