@@ -270,11 +270,7 @@ class AudiobookArtist(Agent.Artist):
         # author source is identified.
 
         # Log some stuff
-        self.Log(
-            '------------------------------------------------'
-            'ARTIST SEARCH'
-            '------------------------------------------------'
-        )
+        self.log_separator('ARTIST SEARCH')
         self.Log(
             '* Album:           %s', media.album
         )
@@ -286,10 +282,7 @@ class AudiobookArtist(Agent.Artist):
             'Not Ready For Artist Search Yet'
             '****************************************'
         )
-        self.Log(
-            '------------------------------------------------'
-            '------------------------------------------------'
-        )
+        self.log_separator()
 
     def hasProxy(self):
         return Prefs['imageproxyurl'] is not None
@@ -364,11 +357,7 @@ class AudiobookAlbum(Agent.Album):
     def doSearch(self, url, ctx):
         html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         found = []
-        self.Log(
-            '-----------------------------------------'
-            'just before new xpath line'
-            '-----------------------------------------'
-            )
+        self.log_separator('just before new xpath line')
         for r in html.xpath('//ul//li[contains(@class,"productListItem")]'):
             datetext = self.getStringContentFromXPath(
                 r, (
@@ -403,11 +392,7 @@ class AudiobookAlbum(Agent.Album):
                     '[contains (@class,"narratorLabel")]/span//a[1]'
                 ).format(ctx['NAR_BY'])
             )
-            self.Log(
-                '-----------------------------------------------'
-                'XPATH SEARCH HIT'
-                '-----------------------------------------------'
-            )
+            self.log_separator('XPATH SEARCH HIT')
 
             found.append(
                 {
@@ -419,12 +404,7 @@ class AudiobookAlbum(Agent.Album):
                     'narrator': narrator
                 }
             )
-
-        self.Log(
-            '-----------------------------------------'
-            'just after new xpath line'
-            '-----------------------------------------'
-            )
+        self.log_separator('just after new xpath line')
 
         for r in html.xpath('//div[contains (@class, "adbl-search-result")]'):
             date = self.getDateFromString(
@@ -457,11 +437,7 @@ class AudiobookAlbum(Agent.Album):
                     ctx['NAR_BY']
                 )
             )
-            self.Log(
-                '-----------------------------------------------'
-                'XPATH SEARCH HIT'
-                '-----------------------------------------------'
-            )
+            self.log_separator('XPATH SEARCH HIT')
 
             found.append(
                 {
@@ -479,21 +455,13 @@ class AudiobookAlbum(Agent.Album):
     def search(self, results, media, lang, manual):
         ctx = SetupUrls(Prefs['sitetype'], Prefs['site'], lang)
         LCL_IGNORE_SCORE = IGNORE_SCORE
-
-        self.Log(
-            '-----------------------------------------------'
-            'ALBUM SEARCH'
-            '-----------------------------------------------'
-        )
+        self.log_separator('ALBUM SEARCH')
         self.Log('* ID:              %s', media.parent_metadata.id)
         self.Log('* Title:           %s', media.title)
         self.Log('* Name:            %s', media.name)
         self.Log('* Album:           %s', media.album)
         self.Log('* Artist:          %s', media.artist)
-        self.Log(
-            '-------------------------------------------------'
-            '-------------------------------------------------'
-        )
+        self.log_separator()
 
         # Handle a couple of edge cases where
         # album search will give bad results.
@@ -533,18 +501,12 @@ class AudiobookAlbum(Agent.Album):
             Log('Album search: ' + media.title)
 
         # Log some stuff for troubleshooting detail
-        self.Log(
-            '-----------------------------------'
-            '------------------------------------'
-        )
+        self.log_separator()
         self.Log('* ID:              %s', media.parent_metadata.id)
         self.Log('* Title:           %s', media.title)
         self.Log('* Name:            %s', media.name)
         self.Log('* Album:           %s', media.album)
-        self.Log(
-            '-----------------------------------'
-            '------------------------------------'
-        )
+        self.log_separator()
 
         # Normalize the name
         normalizedName = String.StripDiacritics(media.album)
@@ -603,10 +565,7 @@ class AudiobookAlbum(Agent.Album):
             )
             i += 1
 
-        self.Log(
-            '-----------------------------------'
-            '------------------------------------'
-        )
+        self.log_separator()
         # Walk the found items and gather extended information
         info = []
         i = 1
@@ -692,20 +651,14 @@ class AudiobookAlbum(Agent.Album):
                 )
 
             if i != len(found):
-                self.Log(
-                    '-----------------------------------'
-                    '------------------------------------'
-                )
+                self.log_separator()
 
             i += 1
 
         info = sorted(info, key=lambda inf: inf['score'], reverse=True)
 
         # Output the final results.
-        self.Log(
-            '***********************************'
-            '************************************'
-        )
+        self.log_separator()
         self.Log('Final result:')
         i = 1
         for r in info:
@@ -810,11 +763,7 @@ class AudiobookAlbum(Agent.Album):
                     '/div[3]/a/span/text()'
                 )
             )
-            self.Log(
-                '-----------------------------------------------'
-                'XPATH SEARCH HIT'
-                '-----------------------------------------------'
-            )
+            self.log_separator('XPATH SEARCH HIT')
 
         if date is None:
             for r in html.xpath(
@@ -977,7 +926,7 @@ class AudiobookAlbum(Agent.Album):
             {'series def': series_def},
             {'volume def': volume_def},
         ]
-        # Loop through and log values that exist
+        # Loop through dicts in array
         for log_type in type_arr:
             for key, val in log_type.items():
                 if val:
@@ -1099,66 +1048,63 @@ class AudiobookAlbum(Agent.Album):
     def addTask(self, queue, func, *args, **kargs):
         queue.put((func, args, kargs))
 
+    # Prints a bunch of divider chars like ---
+    def log_separator(self, msg=None):
+        divider = "-" * 35
+        output = divider + divider
+        # Override output with message if passed
+        if msg:
+            output = divider + msg + divider
+
+        return self.Log(output)
+
     # Writes metadata information to log.
     def writeInfo(self, header, url, metadata):
-        self.Log(header)
-        self.Log(
-            '-----------------------------------'
-            '------------------------------------'
-        )
-        self.Log(
-            '* ID:              %s', metadata.id
-        )
-        self.Log(
-            '* URL:             %s', url
-        )
-        self.Log(
-            '* Title:           %s', metadata.title
-        )
-        self.Log(
-            '* Release date:    %s', str(metadata.originally_available_at)
-        )
-        self.Log(
-            '* Studio:          %s', metadata.studio
-        )
-        self.Log(
-            '* Summary:         %s', metadata.summary
-        )
+        self.log_separator(header)
 
-        if len(metadata.collections) > 0:
-            self.Log('|\\')
-            for i, item in enumerate(metadata.collections):
-                self.Log('| * Collection:    %s', metadata.collections[i])
+        # Log basic metadata
+        type_arr = [
+            {'ID': metadata.id},
+            {'URL': url},
+            {'Title': metadata.title},
+            {'Release date': str(metadata.originally_available_at)},
+            {'Studio': metadata.studio},
+            {'Summary': metadata.summary},
+        ]
+        # Loop through dicts in array
+        for log_type in type_arr:
+            # Loop through each key/value
+            for key, val in log_type.items():
+                if val:
+                    self.Log("{key:<15}{val}".format(
+                        key=key,
+                        val=val
+                        )
+                    )
 
-        if len(metadata.genres) > 0:
-            self.Log('|\\')
-            for i, item in enumerate(metadata.genres):
-                self.Log('| * Genre:         %s', metadata.genres[i])
+        # Log basic metadata stored in arrays
+        multi_arr = [
+            {'Collection', metadata.collections},
+            {'Genre', metadata.genres},
+            {'Moods', metadata.moods},
+            {'Styles', metadata.styles},
+            {'Poster URL', metadata.posters},
+            {'Fan art URL', metadata.art},
+        ]
+        # Loop through dicts in array
+        for log_type in multi_arr:
+            # Loop through each key/value
+            for key, val in log_type.items():
+                if val:
+                    # Loop through dict's array
+                    for item in val:
+                        self.Log("{key:<15}{val}".format(
+                            key=key,
+                            val=item
+                            )
+                        )
 
-        if len(metadata.moods) > 0:
-            self.Log('|\\')
-            for i, item in enumerate(metadata.moods):
-                self.Log('| * Moods:         %s', metadata.moods[i])
-
-        if len(metadata.styles) > 0:
-            self.Log('|\\')
-            for i, item in enumerate(metadata.styles):
-                self.Log('| * Styles:        %s', metadata.styles[i])
-
-        if len(metadata.posters) > 0:
-            self.Log('|\\')
-            for poster in metadata.posters.keys():
-                self.Log('| * Poster URL:    %s', poster)
-
-        if len(metadata.art) > 0:
-            self.Log('|\\')
-            for art in metadata.art.keys():
-                self.Log('| * Fan art URL:   %s', art)
-
-        self.Log(
-            '***********************************'
-            '************************************'
-            )
+        self.log_separator()
 
 
 def safe_unicode(s, encoding='utf-8'):
