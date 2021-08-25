@@ -265,7 +265,6 @@ class AudiobookArtist(Agent.Artist):
         return found
 
     def search(self, results, media, lang, manual=False):
-
         # Author data is pulling from last.fm automatically.
         # This will probably never be built out unless a good
         # author source is identified.
@@ -611,6 +610,9 @@ class AudiobookAlbum(Agent.Album):
         # Walk the found items and gather extended information
         info = []
         i = 1
+        itemId_full = None
+        itemId = None
+        valid_itemId = None
         for f in found:
             url = f['url']
             self.Log('URL For Breakdown: %s', url)
@@ -619,21 +621,21 @@ class AudiobookAlbum(Agent.Album):
             for item in url.split('/'):
                 # IDs No longer start with just 'B0'
                 if re.match(r'^[0-9A-Z]{10,10}', item):
-                    itemId = item
+                    itemId_full = item
                     break
-                itemId = None
 
             # New Search results contain question marks after the ID
-            for q_itemId in itemId.split('?'):
+            for itemId in itemId_full.split('?'):
                 # IDs No longer start with just 'B0'
-                if re.match(r'^[0-9A-Z]{10,10}', q_itemId):
+                if re.match(r'^[0-9A-Z]{10,10}', itemId):
+                    valid_itemId = itemId
                     break
 
-            if len(itemId) == 0:
+            if len(valid_itemId) == 0:
                 Log('No Match: %s', url)
                 continue
 
-            self.Log('* ID is                 %s', itemId)
+            self.Log('* ID is                 %s', valid_itemId)
 
             title = f['title']
             thumb = f['thumb']
@@ -674,7 +676,7 @@ class AudiobookAlbum(Agent.Album):
             if score >= LCL_IGNORE_SCORE:
                 info.append(
                     {
-                        'id': itemId,
+                        'id': valid_itemId,
                         'title': title,
                         'year': year,
                         'date': date,
