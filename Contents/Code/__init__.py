@@ -627,9 +627,9 @@ class AudiobookAlbum(Agent.Album):
                 itemId = None
 
             # New Search results contain question marks after the ID
-            for itemId in itemId.split('?'):
+            for q_itemId in itemId.split('?'):
                 # IDs No longer start with just 'B0'
-                if re.match(r'^[0-9A-Z]{10,10}', itemId):
+                if re.match(r'^[0-9A-Z]{10,10}', q_itemId):
                     break
 
             if len(itemId) == 0:
@@ -1103,22 +1103,22 @@ class AudiobookAlbum(Agent.Album):
 
         if len(metadata.collections) > 0:
             self.Log('|\\')
-            for i in range(len(metadata.collections)):
+            for i, item in enumerate(metadata.collections):
                 self.Log('| * Collection:    %s', metadata.collections[i])
 
         if len(metadata.genres) > 0:
             self.Log('|\\')
-            for i in range(len(metadata.genres)):
+            for i, item in enumerate(metadata.genres):
                 self.Log('| * Genre:         %s', metadata.genres[i])
 
         if len(metadata.moods) > 0:
             self.Log('|\\')
-            for i in range(len(metadata.moods)):
+            for i, item in enumerate(metadata.moods):
                 self.Log('| * Moods:         %s', metadata.moods[i])
 
         if len(metadata.styles) > 0:
             self.Log('|\\')
-            for i in range(len(metadata.styles)):
+            for i, item in enumerate(metadata.styles):
                 self.Log('| * Styles:        %s', metadata.styles[i])
 
         if len(metadata.posters) > 0:
