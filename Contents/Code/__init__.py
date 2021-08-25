@@ -824,20 +824,15 @@ class AudiobookAlbum(Agent.Album):
                         self.rating = (
                             json_data['aggregateRating']['ratingValue']
                         )
-                    self.author = ''
-                    counter = 0
+                    author_array = []
                     for c in json_data['author']:
-                        counter += 1
-                        if counter > 1:
-                            self.author += ', '
-                        self.author += c['name']
-                    self.narrator = ''
-                    counter = 0
+                        author_array.append(c['name'])
+                    self.author = ",".join(author_array)
+
+                    narrator_array = []
                     for c in json_data['readBy']:
-                        counter += 1
-                        if counter > 1:
-                            self.narrator += ','
-                        self.narrator += c['name']
+                        narrator_array.append(c['name'])
+                    self.narrator = ",".join(narrator_array)
                     self.studio = json_data['publisher']
                     self.synopsis = json_data['description']
                 if 'itemListElement' in json_data:
