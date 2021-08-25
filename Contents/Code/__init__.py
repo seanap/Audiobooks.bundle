@@ -1122,6 +1122,5 @@ def safe_unicode(s, encoding='utf-8'):
     if isinstance(s, basestring):
         if isinstance(s, types.UnicodeType):
             return s
-        else:
-            return s.decode(encoding)
+        return s.decode(encoding)
     return str(s).decode(encoding)
