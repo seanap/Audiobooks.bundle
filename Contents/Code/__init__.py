@@ -291,10 +291,6 @@ class AudiobookArtist(Agent.Artist):
             '------------------------------------------------'
             '------------------------------------------------'
         )
-        return
-
-    def update(self, metadata, media, lang, force=False):
-        return
 
     def hasProxy(self):
         return Prefs['imageproxyurl'] is not None
@@ -594,19 +590,19 @@ class AudiobookAlbum(Agent.Album):
         if len(found) == 0:
             self.Log('No results found for query "%s"', normalizedName)
             return
-        else:
+
+        self.Log(
+            'Found %s result(s) for query "%s"', len(found), normalizedName
+        )
+        i = 1
+        for f in found:
             self.Log(
-                'Found %s result(s) for query "%s"', len(found), normalizedName
+                '    %s. (title) %s (author) %s (url)[%s]'
+                ' (date)(%s) (thumb){%s}',
+                i, f['title'], f['author'],
+                f['url'], str(f['date']), f['thumb']
             )
-            i = 1
-            for f in found:
-                self.Log(
-                    '    %s. (title) %s (author) %s (url)[%s]'
-                    ' (date)(%s) (thumb){%s}',
-                    i, f['title'], f['author'],
-                    f['url'], str(f['date']), f['thumb']
-                )
-                i += 1
+            i += 1
 
         self.Log(
             '-----------------------------------'
@@ -620,9 +616,10 @@ class AudiobookAlbum(Agent.Album):
             self.Log('URL For Breakdown: %s', url)
 
             # Get the id
-            for itemId in url.split('/'):
+            for item in url.split('/'):
                 # IDs No longer start with just 'B0'
-                if re.match(r'^[0-9A-Z]{10,10}', itemId):
+                if re.match(r'^[0-9A-Z]{10,10}', item):
+                    itemId = item
                     break
                 itemId = None
 
@@ -1145,5 +1142,4 @@ def safe_unicode(s, encoding='utf-8'):
             return s
         else:
             return s.decode(encoding)
-    else:
-        return str(s).decode(encoding)
+    return str(s).decode(encoding)
