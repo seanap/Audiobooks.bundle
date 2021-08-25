@@ -36,8 +36,9 @@ class Logging:
                         val=val
                         )
                     if log_level.lower() == "debug":
-                        return self.debug(output)
-                    return self.info(output)
+                        self.debug(output)
+                    else:
+                        self.info(output)
 
     def metadata_arrs(self, dict_arr, log_level="info"):
         # Loop through dicts in array
@@ -53,5 +54,6 @@ class Logging:
                             )
                         )
                         if log_level.lower() == "debug":
-                            return self.debug(output)
-                        return self.info(output)
+                            self.debug(output)
+                        else:
+                            self.info(output)

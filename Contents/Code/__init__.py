@@ -75,7 +75,7 @@ sites_langs = {
 
 def SetupUrls(sitetype, base, lang='en'):
     log.debug('Library/Search language is : %s', lang)
-    ctx = dict()
+    ctx = {}
     if sitetype:
         log.debug('Manual Site Selection Enabled : %s', base)
         log.debug('Language being ignored due to manual site selection')
@@ -384,7 +384,7 @@ class AudiobookAlbum(Agent.Album):
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
                     '[contains (@class,"narratorLabel")]/span//a[1]'
-                ).format(ctx['NAR_BY'])
+                ).format(self.ctx['NAR_BY'])
             )
             log.separator(msg='XPATH SEARCH HIT', log_level="debug")
 
@@ -409,7 +409,7 @@ class AudiobookAlbum(Agent.Album):
                         u'div/div/ul/li[contains (., "{0}")]'
                         '/span[2]//text()'
                         ).format(
-                        ctx['REL_DATE']
+                        self.ctx['REL_DATE']
                     )
                 )
             )
@@ -566,8 +566,6 @@ class AudiobookAlbum(Agent.Album):
                 log.info('No Match: %s', url)
                 continue
 
-            log.debug('* ID is                 %s', valid_itemId)
-
             title = f['title']
             thumb = f['thumb']
             date = f['date']
@@ -599,6 +597,7 @@ class AudiobookAlbum(Agent.Album):
 
             # Log basic metadata
             data_to_log = [
+                {'ID is': valid_itemId},
                 {'Title is': title},
                 {'Author is': author},
                 {'Narrator is': narrator},
@@ -932,14 +931,14 @@ class AudiobookAlbum(Agent.Album):
         # Clean series
         x = re.match("(.*)(: A .* Series)", self.series_def)
         if x:
-            series_def = x.group(1)
+            self.series_def = x.group(1)
 
         # Clean title
-        seriesshort = series_def
+        seriesshort = self.series_def
         checkseries = " Series"
         # Handle edge cases in titles
-        if series_def.endswith(checkseries):
-            seriesshort = series_def[:-len(checkseries)]
+        if self.series_def.endswith(checkseries):
+            seriesshort = self.series_def[:-len(checkseries)]
 
             y = re.match(
                 "(.*)((: .* " + self.volume_def[2:] + ": A .* Series)|"
@@ -975,9 +974,12 @@ class AudiobookAlbum(Agent.Album):
         self.metadata.collections.add(self.series)
         if self.series2:
             self.metadata.collections.add(self.series2)
-        self.writeInfo('New data', self.url, self.metadata)
+        self.writeInfo()
 
     def update(self, metadata, media, lang, force=False):
+        self.metadata = metadata
+        self.media = media
+        self.lang = lang
         log.debug(
             '***** UPDATING "%s" ID: %s - AUDIBLE v.%s *****',
             media.title, self.metadata.id, VERSION_NO
@@ -989,8 +991,8 @@ class AudiobookAlbum(Agent.Album):
         self.url = self.ctx['AUD_BOOK_INFO'] % self.metadata.id
 
         try:
-            self.html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
-        except NetworkError:
+            self.html = HTML.ElementFromURL(self.url, sleep=REQUEST_DELAY)
+        except Exception:
             pass
 
         self.date = None
@@ -1084,32 +1086,32 @@ class AudiobookAlbum(Agent.Album):
         queue.put((func, args, kargs))
 
     # Writes metadata information to log.
-    def writeInfo(self, header, url, metadata):
-        log.separator(msg=header, log_level="info")
+    def writeInfo(self):
+        log.separator(msg='New data', log_level="info")
 
         # Log basic metadata
         data_to_log = [
-            {'ID': metadata.id},
-            {'URL': url},
-            {'Title': metadata.title},
-            {'Release date': str(metadata.originally_available_at)},
-            {'Studio': metadata.studio},
-            {'Summary': metadata.summary},
+            {'ID': self.metadata.id},
+            {'URL': self.url},
+            {'Title': self.metadata.title},
+            {'Release date': str(self.metadata.originally_available_at)},
+            {'Studio': self.metadata.studio},
+            {'Summary': self.metadata.summary},
         ]
-        Log.metadata(data_to_log, log_level="info")
+        log.metadata(data_to_log, log_level="info")
 
         # Log basic metadata stored in arrays
         multi_arr = [
-            {'Collection', metadata.collections},
-            {'Genre', metadata.genres},
-            {'Moods', metadata.moods},
-            {'Styles', metadata.styles},
-            {'Poster URL', metadata.posters},
-            {'Fan art URL', metadata.art},
+            {'Collection': self.metadata.collections},
+            {'Genre': self.metadata.genres},
+            {'Moods': self.metadata.moods},
+            {'Styles': self.metadata.styles},
+            {'Poster URL': self.metadata.posters},
+            {'Fan art URL': self.metadata.art},
         ]
-        Log.metadata_arrs(multi_arr, log_level="info")
+        log.metadata_arrs(multi_arr, log_level="info")
 
-        Log.separator(log_level="info")
+        log.separator(log_level="info")
 
 
 def safe_unicode(s, encoding='utf-8'):
