@@ -456,11 +456,15 @@ class AudiobookAlbum(Agent.Album):
         ctx = SetupUrls(Prefs['sitetype'], Prefs['site'], lang)
         LCL_IGNORE_SCORE = IGNORE_SCORE
         self.log_separator('ALBUM SEARCH')
-        self.Log('* ID:              %s', media.parent_metadata.id)
-        self.Log('* Title:           %s', media.title)
-        self.Log('* Name:            %s', media.name)
-        self.Log('* Album:           %s', media.album)
-        self.Log('* Artist:          %s', media.artist)
+        # Log basic metadata
+        data_to_log = [
+            {'ID': media.parent_metadata.id},
+            {'Title': media.title},
+            {'Name': media.name},
+            {'Album': media.album},
+            {'Artist': media.artist},
+        ]
+        self.log_metadata(data_to_log)
         self.log_separator()
 
         # Handle a couple of edge cases where
@@ -499,14 +503,6 @@ class AudiobookAlbum(Agent.Album):
                 media.album = media.name
         else:
             Log('Album search: ' + media.title)
-
-        # Log some stuff for troubleshooting detail
-        self.log_separator()
-        self.Log('* ID:              %s', media.parent_metadata.id)
-        self.Log('* Title:           %s', media.title)
-        self.Log('* Name:            %s', media.name)
-        self.Log('* Album:           %s', media.album)
-        self.log_separator()
 
         # Normalize the name
         normalizedName = String.StripDiacritics(media.album)
@@ -625,12 +621,16 @@ class AudiobookAlbum(Agent.Album):
                     scorebase3, scorebase4
                 )
 
-            self.Log('* Title is              %s', title)
-            self.Log('* Author is             %s', author)
-            self.Log('* Narrator is           %s', narrator)
-            self.Log('* Date is               %s', str(date))
-            self.Log('* Score is              %s', str(score))
-            self.Log('* Thumb is              %s', thumb)
+            # Log basic metadata
+            data_to_log = [
+                {'Title is': title},
+                {'Author is': author},
+                {'Narrator is': narrator},
+                {'Date is ': str(date)},
+                {'Score is': str(score)},
+                {'Thumb is': thumb},
+            ]
+            self.log_metadata(data_to_log)
 
             if score >= LCL_IGNORE_SCORE:
                 info.append(
@@ -1058,21 +1058,9 @@ class AudiobookAlbum(Agent.Album):
 
         return self.Log(output)
 
-    # Writes metadata information to log.
-    def writeInfo(self, header, url, metadata):
-        self.log_separator(header)
-
-        # Log basic metadata
-        type_arr = [
-            {'ID': metadata.id},
-            {'URL': url},
-            {'Title': metadata.title},
-            {'Release date': str(metadata.originally_available_at)},
-            {'Studio': metadata.studio},
-            {'Summary': metadata.summary},
-        ]
+    def log_metadata(self, dict_arr):
         # Loop through dicts in array
-        for log_type in type_arr:
+        for log_type in dict_arr:
             # Loop through each key/value
             for key, val in log_type.items():
                 if val:
@@ -1081,6 +1069,21 @@ class AudiobookAlbum(Agent.Album):
                         val=val
                         )
                     )
+
+    # Writes metadata information to log.
+    def writeInfo(self, header, url, metadata):
+        self.log_separator(header)
+
+        # Log basic metadata
+        data_to_log = [
+            {'ID': metadata.id},
+            {'URL': url},
+            {'Title': metadata.title},
+            {'Release date': str(metadata.originally_available_at)},
+            {'Studio': metadata.studio},
+            {'Summary': metadata.summary},
+        ]
+        self.log_metadata(data_to_log)
 
         # Log basic metadata stored in arrays
         multi_arr = [
