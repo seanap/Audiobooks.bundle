@@ -935,42 +935,55 @@ class AudiobookAlbum(Agent.Album):
                     volume_def = w.group(2)
 
         # cleanup synopsis
-        synopsis = synopsis.replace("<i>", "")
-        synopsis = synopsis.replace("</i>", "")
-        synopsis = synopsis.replace("<em>", "")
-        synopsis = synopsis.replace("</em>", "")
-        synopsis = synopsis.replace("<u>", "")
-        synopsis = synopsis.replace("</u>", "")
-        synopsis = synopsis.replace("<b>", "")
-        synopsis = synopsis.replace("</b>", "")
-        synopsis = synopsis.replace("<strong>", "")
-        synopsis = synopsis.replace("</strong>", "")
-        synopsis = synopsis.replace("<ul>", "")
-        synopsis = synopsis.replace("</ul>", "\n")
-        synopsis = synopsis.replace("<ol>", "")
-        synopsis = synopsis.replace("</ol>", "\n")
-        synopsis = synopsis.replace("<li>", " • ")
-        synopsis = synopsis.replace("</li>", "\n")
-        synopsis = synopsis.replace("<br />", "")
-        synopsis = synopsis.replace("<p>", "")
-        synopsis = synopsis.replace("</p>", "\n")
+        synopsis = (
+            synopsis.replace("<i>", "")
+            .replace("</i>", "")
+            .replace("<em>", "")
+            .replace("</em>", "")
+            .replace("<u>", "")
+            .replace("</u>", "")
+            .replace("<b>", "")
+            .replace("</b>", "")
+            .replace("<strong>", "")
+            .replace("</strong>", "")
+            .replace("<ul>", "")
+            .replace("</ul>", "\n")
+            .replace("<ol>", "")
+            .replace("</ol>", "\n")
+            .replace("<li>", " • ")
+            .replace("</li>", "\n")
+            .replace("<br />", "")
+            .replace("<p>", "")
+            .replace("</p>", "\n")
+        )
 
-        self.Log('date:        %s', date)
-        self.Log('title:       %s', title)
-        self.Log('author:      %s', author)
-        self.Log('series:      %s', series)
-        self.Log('narrator:    %s', narrator)
-        self.Log('studio:      %s', studio)
-        self.Log('thumb:       %s', thumb)
-        self.Log('rating:      %s', rating)
-        self.Log('genres:      %s, %s', genre_parent, genre_child)
-        self.Log('synopsis:    %s', synopsis)
-        self.Log('Series:      %s', series)
-        self.Log('Volume:      %s', volume)
-        self.Log('Series2:     %s', series2)
-        self.Log('Volume2:     %s', volume2)
-        self.Log('Series_def:  %s', series_def)
-        self.Log('Volume_def:  %s', volume_def)
+        # Setup logging of all data in the array
+        type_arr = [
+            {'date': date},
+            {'title': title},
+            {'author': author},
+            {'series': series},
+            {'narrator': narrator},
+            {'studio': studio},
+            {'thumb': thumb},
+            {'rating': rating},
+            {'genres': genre_parent + ', ' + genre_child},
+            {'synopsis': synopsis},
+            {'volume': volume},
+            {'series2': series2},
+            {'volume2': volume2},
+            {'series def': series_def},
+            {'volume def': volume_def},
+        ]
+        # Loop through and log values that exist
+        for log_type in type_arr:
+            for key, val in log_type.items():
+                if val:
+                    self.Log("{key:<15}{val}".format(
+                        key=key,
+                        val=val
+                        )
+                    )
 
         # Set the date and year if found.
         if date is not None:
