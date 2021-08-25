@@ -998,15 +998,22 @@ class AudiobookAlbum(Agent.Album):
 
         # Add Narrators to Styles
         narrators_list = narrator.split(",")
-        contributors_list = ['full cast']
+        narr_contributors_list = [
+            'full cast'
+        ]
         metadata.styles.clear()
+        # Loop through narrators to check if it has contributor wording
         for narrator in narrators_list:
-            if narrator.lower() not in contributors_list:
+            if not [
+                contrib for contrib in narr_contributors_list if (
+                    contrib in narrator.lower()
+                )
+            ]:
                 metadata.styles.add(narrator.strip())
 
         # Add Authors to Moods
         author_list = author.split(",")
-        contributers_list = [
+        author_contributers_list = [
             'contributor',
             'translator',
             'foreword',
@@ -1014,8 +1021,13 @@ class AudiobookAlbum(Agent.Album):
             'full cast',
         ]
         metadata.moods.clear()
+        # Loop through authors to check if it has contributor wording
         for author in author_list:
-            if author.lower() not in contributers_list:
+            if not [
+                contrib for contrib in author_contributers_list if (
+                    contrib in author.lower()
+                )
+            ]:
                 metadata.moods.add(author.strip())
 
         # Clean series
