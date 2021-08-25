@@ -759,8 +759,8 @@ class AudiobookAlbum(Agent.Album):
         series = ''
         series2 = ''
         series_def = ''
-        genre1 = None
-        genre2 = None
+        genre_parent = None
+        genre_child = None
         volume = ''
         volume2 = ''
         volume_def = ''
@@ -799,13 +799,13 @@ class AudiobookAlbum(Agent.Album):
             series = self.getStringContentFromXPath(
                 r, '//div[contains (@class, "adbl-series-link")]//a[1]'
             )
-            genre1 = self.getStringContentFromXPath(
+            genre_parent = self.getStringContentFromXPath(
                 r, (
                     '//div[contains(@class,"adbl-pd-breadcrumb")]'
                     '/div[2]/a/span/text()'
                 )
             )
-            genre2 = self.getStringContentFromXPath(
+            genre_child = self.getStringContentFromXPath(
                 r, (
                     '//div[contains(@class,"adbl-pd-breadcrumb")]'
                     '/div[3]/a/span/text()'
@@ -858,11 +858,11 @@ class AudiobookAlbum(Agent.Album):
                         studio = json_data['publisher']
                         synopsis = json_data['description']
                     if 'itemListElement' in json_data:
-                        genre1 = (
+                        genre_parent = (
                             json_data['itemListElement'][1]['item']['name']
                         )
                         try:
-                            genre2 = (
+                            genre_child = (
                                 json_data['itemListElement'][2]['item']['name']
                             )
                         except:
@@ -966,7 +966,7 @@ class AudiobookAlbum(Agent.Album):
         self.Log('studio:      %s', studio)
         self.Log('thumb:       %s', thumb)
         self.Log('rating:      %s', rating)
-        self.Log('genres:      %s, %s', genre1, genre2)
+        self.Log('genres:      %s, %s', genre_parent, genre_child)
         self.Log('synopsis:    %s', synopsis)
         self.Log('Series:      %s', series)
         self.Log('Volume:      %s', volume)
@@ -981,18 +981,16 @@ class AudiobookAlbum(Agent.Album):
 
         # Add the genres
         metadata.genres.clear()
-        metadata.genres.add(genre1)
-        metadata.genres.add(genre2)
+        metadata.genres.add(genre_parent)
+        metadata.genres.add(genre_child)
 
         # Add Narrators to Styles
         narrators_list = narrator.split(",")
         contributors_list = ['full cast']
         metadata.styles.clear()
-        for narrators in narrators_list:
-            if not [
-                item for item in contributors_list if item in narrators.lower()
-            ]:
-                metadata.styles.add(narrators.strip())
+        for narrator in narrators_list:
+            if narrator.lower() not in contributors_list:
+                metadata.styles.add(narrator.strip())
 
         # Add Authors to Moods
         author_list = author.split(",")
@@ -1004,13 +1002,9 @@ class AudiobookAlbum(Agent.Album):
             'full cast',
         ]
         metadata.moods.clear()
-        for authors in author_list:
-            metadata.moods.add(authors.strip())
-            for contributors in contributers_list:
-                if not [
-                    item for item in contributers_list if item in authors.lower()
-                ]:
-                    metadata.moods.add(authors)
+        for author in author_list:
+            if author.lower() not in contributers_list:
+                metadata.moods.add(author.strip())
 
         # Clean series
         x = re.match("(.*)(: A .* Series)", series_def)
