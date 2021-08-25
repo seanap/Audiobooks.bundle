@@ -12,7 +12,7 @@ import Queue
 def json_decode(output):
     try:
         return json.loads(output, encoding="utf-8")
-    except:
+    except AttributeError:
         return None
 
 
@@ -214,7 +214,7 @@ class AudiobookArtist(Agent.Artist):
     def getDateFromString(self, string):
         try:
             return Datetime.ParseDate(string).date()
-        except:
+        except AttributeError:
             return None
 
     def getStringContentFromXPath(self, source, query):
@@ -320,7 +320,7 @@ class AudiobookAlbum(Agent.Album):
     def getDateFromString(self, string):
         try:
             return Datetime.ParseDate(string).date()
-        except:
+        except AttributeError:
             return None
 
     def getStringContentFromXPath(self, source, query):
@@ -848,7 +848,7 @@ class AudiobookAlbum(Agent.Album):
                         self.genre_child = (
                             json_data['itemListElement'][2]['item']['name']
                         )
-                    except:
+                    except AttributeError:
                         continue
 
     def handle_series(self):
