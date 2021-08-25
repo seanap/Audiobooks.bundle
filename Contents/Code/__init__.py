@@ -4,7 +4,7 @@ import json
 import re
 import types
 
-from logging import Log
+from logging import Logging
 
 import Queue
 
@@ -73,13 +73,13 @@ sites_langs = {
 
 
 def SetupUrls(sitetype, base, lang='en'):
-    Log.debug('Library/Search language is : %s', lang)
+    Logging.debug('Library/Search language is : %s', lang)
     ctx = dict()
     if sitetype:
-        Log.debug('Manual Site Selection Enabled : %s', base)
-        Log.debug('Language being ignored due to manual site selection')
+        Logging.debug('Manual Site Selection Enabled : %s', base)
+        Logging.debug('Language being ignored due to manual site selection')
         if base in sites_langs:
-            Log.debug('Pulling language from sites array')
+            Logging.debug('Pulling language from sites array')
             lang = sites_langs[base]['lang']
             if lang in intl_sites:
                 base = intl_sites[lang]['url']
@@ -99,35 +99,35 @@ def SetupUrls(sitetype, base, lang='en'):
                 ctx['REL_DATE_INFO'] = ctx['REL_DATE']
                 ctx['NAR_BY'] = 'Narrated By'
                 ctx['NAR_BY_INFO'] = 'Narrated by'
-        Log.debug(
+        Logging.debug(
             'Sites language is : %s', lang
             )
-        Log.debug(
+        Logging.debug(
             '/************************************'
             'LANG DEBUGGING'
             '************************************/'
             )
-        Log.debug(
+        Logging.debug(
             '/* REL_DATE = %s', ctx['REL_DATE']
             )
-        Log.debug(
+        Logging.debug(
             '/* REL_DATE_INFO = %s', ctx['REL_DATE_INFO']
             )
-        Log.debug(
+        Logging.debug(
             '/* NAR_BY = %s', ctx['NAR_BY']
             )
-        Log.debug(
+        Logging.debug(
             '/* NAR_BY_INFO = %s', ctx['NAR_BY_INFO']
             )
-        Log.debug(
+        Logging.debug(
             '/****************************************'
             '****************************************/'
             )
     else:
-        Log.debug(
+        Logging.debug(
             'Audible site will be chosen by library language'
             )
-        Log.debug(
+        Logging.debug(
             'Library Language is %s', lang
             )
         if base is None:
@@ -268,19 +268,19 @@ class AudiobookArtist(Agent.Artist):
         # author source is identified.
 
         # Log some stuff
-        Log.separator(msg='ARTIST SEARCH', log_level='debug')
-        Log.debug(
+        Logging.separator(msg='ARTIST SEARCH', log_level='debug')
+        Logging.debug(
             '* Album:           %s', media.album
         )
-        Log.debug(
+        Logging.debug(
             '* Artist:           %s', media.artist
         )
-        Log.debug(
+        Logging.debug(
             '****************************************'
             'Not Ready For Artist Search Yet'
             '****************************************'
         )
-        Log.separator(log_level='debug')
+        Logging.separator(log_level='debug')
 
     def hasProxy(self):
         return Prefs['imageproxyurl'] is not None
@@ -295,7 +295,7 @@ class AudiobookArtist(Agent.Artist):
                 try:
                     func(*args, **kargs)
                 except Exception as e:
-                    Log.info(e)
+                    Logging.info(e)
                 queue.task_done()
             except Queue.Empty:
                 continue
@@ -385,7 +385,7 @@ class AudiobookAlbum(Agent.Album):
                     '[contains (@class,"narratorLabel")]/span//a[1]'
                 ).format(ctx['NAR_BY'])
             )
-            Log.separator(msg='XPATH SEARCH HIT', log_level="debug")
+            Logging.separator(msg='XPATH SEARCH HIT', log_level="debug")
 
             self.found.append(
                 {
@@ -432,7 +432,7 @@ class AudiobookAlbum(Agent.Album):
                     self.ctx['NAR_BY']
                 )
             )
-            Log.separator(msg='XPATH SEARCH HIT', log_level="debug")
+            Logging.separator(msg='XPATH SEARCH HIT', log_level="debug")
 
             self.found.append(
                 {
@@ -450,16 +450,16 @@ class AudiobookAlbum(Agent.Album):
         self.found = []
         self.ctx = ctx
 
-        Log.separator(msg='just before new xpath line', log_level="debug")
+        Logging.separator(msg='just before new xpath line', log_level="debug")
         self.before_xpath()
 
-        Log.separator(msg='just after new xpath line', log_level="debug")
+        Logging.separator(msg='just after new xpath line', log_level="debug")
         self.after_xpath()
 
         return self.found
 
     def pre_search(self):
-        Log.separator(msg='ALBUM SEARCH', log_level="info")
+        Logging.separator(msg='ALBUM SEARCH', log_level="info")
         # Log basic metadata
         data_to_log = [
             {'ID': self.media.parent_metadata.id},
@@ -468,45 +468,45 @@ class AudiobookAlbum(Agent.Album):
             {'Album': self.media.album},
             {'Artist': self.media.artist},
         ]
-        Log.metadata(data_to_log)
-        Log.separator(log_level="info")
+        Logging.metadata(data_to_log)
+        Logging.separator(log_level="info")
 
         # Handle a couple of edge cases where
         # album search will give bad results.
         if self.media.album is None and not self.manual:
-            Log.info('Album Title is NULL on an automatic search.  Returning')
+            Logging.info('Album Title is NULL on an automatic search.  Returning')
             return
         if self.media.album == '[Unknown Album]' and not self.manual:
-            Log.info(
+            Logging.info(
                 'Album Title is [Unknown Album]'
                 ' on an automatic search.  Returning'
             )
             return
 
         if self.manual:
-            Log.info(
+            Logging.info(
                 'You clicked \'fix match\'. '
                 'This may have returned no useful results because '
                 'it\'s searching using the title of the first track.'
             )
-            Log.info(
+            Logging.info(
                 'There\'s not currently a way around this initial failure. '
                 'But clicking \'Search Options\' and '
                 'entering the title works just fine.'
             )
-            Log.info(
+            Logging.info(
                 'This message will appear during the initial '
                 'search and the actual manual search.'
             )
             # If this is a custom search,
             # use the user-entered name instead of the scanner hint.
             if self.media.name:
-                Log.info(
+                Logging.info(
                     'Custom album search for: ' + self.media.name
                 )
                 self.media.album = self.media.name
         else:
-            Log.info('Album search: ' + self.media.title)
+            Logging.info('Album search: ' + self.media.title)
 
     def format_title(self):
         # Normalize the name
@@ -515,7 +515,7 @@ class AudiobookAlbum(Agent.Album):
         )
         if len(self.normalizedName) == 0:
             self.normalizedName = self.media.album
-        Log.debug(
+        Logging.debug(
             'normalizedName = %s', self.normalizedName
         )
 
@@ -523,15 +523,15 @@ class AudiobookAlbum(Agent.Album):
         self.normalizedName = re.sub(
             r"[\(\[].*?[\)\]]", "", self.normalizedName
         )
-        Log.debug(
+        Logging.debug(
             'chopping bracketed text = %s', self.normalizedName
         )
         self.normalizedName = self.normalizedName.strip()
-        Log.debug(
+        Logging.debug(
             'normalizedName stripped = %s', self.normalizedName
         )
 
-        Log.info(
+        Logging.info(
             '***** SEARCHING FOR "%s" - AUDIBLE v.%s *****',
             self.normalizedName, VERSION_NO
         )
@@ -545,7 +545,7 @@ class AudiobookAlbum(Agent.Album):
         valid_itemId = None
         for f in self.found:
             url = f['url']
-            Log.debug('URL For Breakdown: %s', url)
+            Logging.debug('URL For Breakdown: %s', url)
 
             # Get the id
             for item in url.split('/'):
@@ -562,10 +562,10 @@ class AudiobookAlbum(Agent.Album):
                     break
 
             if len(valid_itemId) == 0:
-                Log.info('No Match: %s', url)
+                Logging.info('No Match: %s', url)
                 continue
 
-            Log.debug('* ID is                 %s', valid_itemId)
+            Logging.debug('* ID is                 %s', valid_itemId)
 
             title = f['title']
             thumb = f['thumb']
@@ -580,8 +580,8 @@ class AudiobookAlbum(Agent.Album):
             # Score the album name
             scorebase1 = self.media.album
             scorebase2 = title.encode('utf-8')
-            # Log.debug('scorebase1:    %s', scorebase1)
-            # Log.debug('scorebase2:    %s', scorebase2)
+            # Logging.debug('scorebase1:    %s', scorebase1)
+            # Logging.debug('scorebase2:    %s', scorebase2)
 
             score = INITIAL_SCORE - Util.LevenshteinDistance(
                 scorebase1, scorebase2
@@ -590,8 +590,8 @@ class AudiobookAlbum(Agent.Album):
             if self.media.artist:
                 scorebase3 = self.media.artist
                 scorebase4 = author
-                # Log.debug('scorebase3:    %s', scorebase3)
-                # Log.debug('scorebase4:    %s', scorebase4)
+                # Logging.debug('scorebase3:    %s', scorebase3)
+                # Logging.debug('scorebase4:    %s', scorebase4)
                 score = INITIAL_SCORE - Util.LevenshteinDistance(
                     scorebase3, scorebase4
                 )
@@ -605,7 +605,7 @@ class AudiobookAlbum(Agent.Album):
                 {'Score is': str(score)},
                 {'Thumb is': thumb},
             ]
-            Log.metadata(data_to_log, log_level="info")
+            Logging.metadata(data_to_log, log_level="info")
 
             if score >= self.LCL_IGNORE_SCORE:
                 info.append(
@@ -620,13 +620,13 @@ class AudiobookAlbum(Agent.Album):
                     }
                 )
             else:
-                Log.info(
+                Logging.info(
                     '# Score is below ignore boundary (%s)... Skipping!',
                     self.LCL_IGNORE_SCORE
                 )
 
             if i != len(self.found):
-                Log.separator()
+                Logging.separator()
 
             i += 1
 
@@ -663,20 +663,20 @@ class AudiobookAlbum(Agent.Album):
 
         # Write search result status to log
         if len(self.result) == 0:
-            Log.info(
+            Logging.info(
                 'No results found for query "%s"',
                 self.normalizedName
             )
             return
 
-        Log.debug(
+        Logging.debug(
             'Found %s result(s) for query "%s"',
             len(self.result),
             self.normalizedName
         )
         i = 1
         for f in self.result:
-            Log.debug(
+            Logging.debug(
                 '    %s. (title) %s (author) %s (url)[%s]'
                 ' (date)(%s) (thumb){%s}',
                 i, f['title'], f['author'],
@@ -684,19 +684,19 @@ class AudiobookAlbum(Agent.Album):
             )
             i += 1
 
-        Log.separator(log_level="info")
+        Logging.separator(log_level="info")
 
         info = self.run_search()
 
         # Output the final results.
-        Log.separator(log_level="debug")
-        Log.debug('Final result:')
+        Logging.separator(log_level="debug")
+        Logging.debug('Final result:')
         i = 1
         for r in info:
             description = '\"%s\" by %s [%s]' % (
                 r['title'], r['artist'], r['year']
             )
-            Log.debug(
+            Logging.debug(
                 '    [%s]    %s. %s (%s) %s {%s} [%s]',
                 r['score'], i, r['title'], r['year'],
                 r['artist'], r['id'], r['thumb']
@@ -715,7 +715,7 @@ class AudiobookAlbum(Agent.Album):
             # and this one has a score that is >= GOOD SCORE,
             # then ignore the rest of the results
             if not manual and len(info) > 1 and r['score'] >= GOOD_SCORE:
-                Log.info(
+                Logging.info(
                     '            *** The score for these results are great, '
                     'so we will use them, and ignore the rest. ***'
                 )
@@ -798,7 +798,7 @@ class AudiobookAlbum(Agent.Album):
                     '/div[3]/a/span/text()'
                 )
             )
-            Log.separator(msg='XPATH SEARCH HIT')
+            Logging.separator(msg='XPATH SEARCH HIT')
 
     def date_missing(self):
         for r in self.html.xpath(
@@ -812,7 +812,7 @@ class AudiobookAlbum(Agent.Album):
                 r'([^\\])(\\(?![bfnrt\'\"\\/]|u[A-Fa-f0-9]{4}))'
             )
             page_content = remove_inv_json_esc.sub(r'\1\\\2', page_content)
-            Log.debug(page_content)
+            Logging.debug(page_content)
             json_data = json_decode(page_content)
             for json_data in json_data:
                 if 'datePublished' in json_data:
@@ -977,7 +977,7 @@ class AudiobookAlbum(Agent.Album):
         self.writeInfo('New data', self.url, self.metadata)
 
     def update(self, metadata, media, lang, force=False):
-        Log.debug(
+        Logging.debug(
             '***** UPDATING "%s" ID: %s - AUDIBLE v.%s *****',
             media.title, self.metadata.id, VERSION_NO
         )
@@ -1057,7 +1057,7 @@ class AudiobookAlbum(Agent.Album):
             {'series def': self.series_def},
             {'volume def': self.volume_def},
         ]
-        Log.metadata(data_to_log, log_level="debug")
+        Logging.metadata(data_to_log, log_level="debug")
 
         self.compile_metadata()
 
@@ -1074,7 +1074,7 @@ class AudiobookAlbum(Agent.Album):
                 try:
                     func(*args, **kargs)
                 except Exception as e:
-                    Log.info(e)
+                    Logging.info(e)
                 queue.task_done()
             except Queue.Empty:
                 continue
@@ -1084,7 +1084,7 @@ class AudiobookAlbum(Agent.Album):
 
     # Writes metadata information to log.
     def writeInfo(self, header, url, metadata):
-        Log.separator(msg=header, log_level="info")
+        Logging.separator(msg=header, log_level="info")
 
         # Log basic metadata
         data_to_log = [
