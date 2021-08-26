@@ -8,7 +8,7 @@ import types
 from logging import Logging
 from urls import SiteUrl
 
-VERSION_NO = '1.2021.08.24.1'
+VERSION_NO = '2021.08.25.1'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -36,6 +36,12 @@ def Start():
         'Media Center PC 6.0'
     )
     HTTP.Headers['Accept-Encoding'] = 'gzip'
+    log.separator(
+        msg=(
+            " - " + "Audible Audiobooks Agent v" + VERSION_NO
+        ),
+        log_level="info"
+    )
 
 
 class AudiobookArtist(Agent.Artist):
@@ -370,9 +376,7 @@ class AudiobookAlbum(Agent.Album):
         log.separator(
             msg=(
                 "SEARCHING FOR " + '"' + self.normalizedName + '"'
-            ) + (
-                    " - " + "AUDIBLE v" + VERSION_NO
-                ),
+            ),
             log_level="info"
         )
 
@@ -432,6 +436,7 @@ class AudiobookAlbum(Agent.Album):
                     scorebase3, scorebase4
                 )
 
+            log.info(msg=("Result #" + i), log_level="info")
             # Log basic metadata
             data_to_log = [
                 {'ID is': valid_itemId},
@@ -814,9 +819,13 @@ class AudiobookAlbum(Agent.Album):
         self.metadata = metadata
         self.media = media
         self.lang = lang
-        log.debug(
-            '***** UPDATING "%s" ID: %s - AUDIBLE v.%s *****',
-            media.title, self.metadata.id, VERSION_NO
+        log.separator(
+            msg=(
+                "UPDATING" + ' "' + self.media.title + '" ' + (
+                    "ID: " + self.metadata.id
+                )
+            ),
+            log_level="info"
         )
 
         # Make url
@@ -929,6 +938,7 @@ class AudiobookAlbum(Agent.Album):
             {'Release date': str(self.metadata.originally_available_at)},
             {'Studio': self.metadata.studio},
             {'Summary': self.metadata.summary},
+            {'Poster URL': self.thumb},
         ]
         log.metadata(data_to_log, log_level="info")
 
@@ -938,7 +948,6 @@ class AudiobookAlbum(Agent.Album):
             {'Genre': self.metadata.genres},
             {'Moods(Authors)': self.metadata.moods},
             {'Styles(Narrators)': self.metadata.styles},
-            {'Poster URL': self.metadata.posters.keys()},
             # {'Fan art URL': self.metadata.art},
         ]
         log.metadata_arrs(multi_arr, log_level="info")
