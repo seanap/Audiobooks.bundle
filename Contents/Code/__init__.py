@@ -784,9 +784,10 @@ class AudiobookAlbum(Agent.Album):
             self.metadata.originally_available_at = self.date
 
         # Add the genres
-        self.metadata.genres.clear()
-        self.metadata.genres.add(self.genre_parent)
-        self.metadata.genres.add(self.genre_child)
+        if not Prefs['no_overwrite_genre']:
+            self.metadata.genres.clear()
+            self.metadata.genres.add(self.genre_parent)
+            self.metadata.genres.add(self.genre_child)
 
         self.parse_author_narrator()
 
@@ -799,8 +800,11 @@ class AudiobookAlbum(Agent.Album):
         )
         self.metadata.studio = self.studio
         self.metadata.summary = self.synopsis
-        self.metadata.posters[1] = Proxy.Media(HTTP.Request(self.thumb))
-        self.metadata.posters.validate_keys(self.thumb)
+
+        if not Prefs['disable_cover']:
+            self.metadata.posters[1] = Proxy.Media(HTTP.Request(self.thumb))
+            self.metadata.posters.validate_keys(self.thumb)
+
         # Use rating only when available
         if self.rating:
             self.metadata.rating = float(self.rating) * 2

@@ -9,6 +9,16 @@
     "values"  : ["www.audible.com","www.audible.co.uk","www.audible.com.au","www.audible.de","www.audible.fr","www.audible.it"],
     "default" : "www.audible.com"
 },{
+	"id": "disable_cover",
+	"label": "Disables the agent fetching artwork from Audible",
+	"type": "bool",
+	"default": "false"
+},{
+	"id": "no_overwrite_genre",
+	"label": "Leaves existing genres in place",
+	"type": "bool",
+	"default": "false"
+},{
 	"id": "copyyear",
 	"label": "Uses copyright year instead of datePublished",
 	"type": "bool",
