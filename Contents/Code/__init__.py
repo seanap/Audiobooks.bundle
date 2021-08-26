@@ -939,12 +939,12 @@ class AudiobookAlbum(Agent.Album):
 
         # Log basic metadata stored in arrays
         multi_arr = [
-            {'Collection': self.metadata.collections},
+            # {'Collection': self.metadata.collections},
             {'Genre': self.metadata.genres},
-            {'Moods': self.metadata.moods},
-            {'Styles': self.metadata.styles},
-            {'Poster URL': self.metadata.posters},
-            {'Fan art URL': self.metadata.art},
+            {'Moods(Authors)': self.metadata.moods},
+            {'Styles(Narrators)': self.metadata.styles},
+            {'Poster URL': self.metadata.posters.keys()},
+            # {'Fan art URL': self.metadata.art},
         ]
         log.metadata_arrs(multi_arr, log_level="info")
 
