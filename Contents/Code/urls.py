@@ -34,6 +34,7 @@ class SiteUrl:
 
     sites_langs = {
         'www.audible.com': {'lang': 'en'},
+        'www.audible.ca': {'lang': 'en'},
         'www.audible.co.uk': {'lang': 'en'},
         'www.audible.com.au': {'lang': 'en'},
         'www.audible.fr': {'lang': 'fr'},
