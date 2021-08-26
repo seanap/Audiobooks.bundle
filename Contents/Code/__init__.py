@@ -1,20 +1,13 @@
 # Audiobooks (Audible)
 # coding: utf-8
 import json
+import Queue
 import re
 import types
+# Import internal tools
 from logging import Logging
-import Queue
+from urls import SiteUrl
 
-
-def json_decode(output):
-    try:
-        return json.loads(output, encoding="utf-8")
-    except AttributeError:
-        return None
-
-
-# URLs
 VERSION_NO = '1.2021.08.24.1'
 
 # Delay used when requesting HTML,
@@ -32,165 +25,6 @@ THREAD_MAX = 20
 
 # Setup logger
 log = Logging()
-
-intl_sites = {
-    'en': {
-        'url': 'www.audible.com',
-        'urltitle': u'title=',
-        'rel_date': u'Release date',
-        'nar_by': u'Narrated By',
-        'nar_by2': u'Narrated by'
-    },
-    'fr': {
-        'url': 'www.audible.fr',
-        'urltitle': u'title=',
-        'rel_date': u'Date de publication',
-        'nar_by': u'Narrateur(s)',
-        'nar_by2': u'Lu par'
-    },
-    'de': {
-        'url': 'www.audible.de',
-        'urltitle': u'title=',
-        'rel_date': u'Erscheinungsdatum',
-        'nar_by': u'Gesprochen von',
-        'rel_date2': u'Veröffentlicht'
-    },
-    'it': {
-        'url': 'www.audible.it',
-        'urltitle': u'title=',
-        'rel_date': u'Data di Pubblicazione',
-        'nar_by': u'Narratore'
-    },
-}
-
-sites_langs = {
-    'www.audible.com': {'lang': 'en'},
-    'www.audible.co.uk': {'lang': 'en'},
-    'www.audible.com.au': {'lang': 'en'},
-    'www.audible.fr': {'lang': 'fr'},
-    'www.audible.de': {'lang': 'de'},
-    'www.audible.it': {'lang': 'it'},
-}
-
-
-def SetupUrls(sitetype, base, lang='en'):
-    log.debug('Library/Search language is : %s', lang)
-    ctx = {}
-    if sitetype:
-        log.debug('Manual Site Selection Enabled : %s', base)
-        log.debug('Language being ignored due to manual site selection')
-        if base in sites_langs:
-            log.debug('Pulling language from sites array')
-            lang = sites_langs[base]['lang']
-            if lang in intl_sites:
-                base = intl_sites[lang]['url']
-                urlsearchtitle = intl_sites[lang]['urltitle']
-                ctx['REL_DATE'] = intl_sites[lang]['rel_date']
-                ctx['NAR_BY'] = intl_sites[lang]['nar_by']
-                if 'rel_date2' in intl_sites[lang]:
-                    ctx['REL_DATE_INFO'] = intl_sites[lang]['rel_date2']
-                else:
-                    ctx['REL_DATE_INFO'] = ctx['REL_DATE']
-                if 'nar_by2' in intl_sites[lang]:
-                    ctx['NAR_BY_INFO'] = intl_sites[lang]['nar_by2']
-                else:
-                    ctx['NAR_BY_INFO'] = ctx['NAR_BY']
-            else:
-                ctx['REL_DATE'] = 'Release date'
-                ctx['REL_DATE_INFO'] = ctx['REL_DATE']
-                ctx['NAR_BY'] = 'Narrated By'
-                ctx['NAR_BY_INFO'] = 'Narrated by'
-        log.debug(
-            'Sites language is : %s', lang
-            )
-        log.debug(
-            '/************************************'
-            'LANG DEBUGGING'
-            '************************************/'
-            )
-        log.debug(
-            '/* REL_DATE = %s', ctx['REL_DATE']
-            )
-        log.debug(
-            '/* REL_DATE_INFO = %s', ctx['REL_DATE_INFO']
-            )
-        log.debug(
-            '/* NAR_BY = %s', ctx['NAR_BY']
-            )
-        log.debug(
-            '/* NAR_BY_INFO = %s', ctx['NAR_BY_INFO']
-            )
-        log.debug(
-            '/****************************************'
-            '****************************************/'
-            )
-    else:
-        log.debug(
-            'Audible site will be chosen by library language'
-            )
-        log.debug(
-            'Library Language is %s', lang
-            )
-        if base is None:
-            base = 'www.audible.com'
-        if lang in intl_sites:
-            base = intl_sites[lang]['url']
-            urlsearchtitle = intl_sites[lang]['urltitle']
-            ctx['REL_DATE'] = intl_sites[lang]['rel_date']
-            ctx['NAR_BY'] = intl_sites[lang]['nar_by']
-            if 'rel_date2' in intl_sites[lang]:
-                ctx['REL_DATE_INFO'] = intl_sites[lang]['rel_date2']
-            else:
-                ctx['REL_DATE_INFO'] = ctx['REL_DATE']
-            if 'nar_by2' in intl_sites[lang]:
-                ctx['NAR_BY_INFO'] = intl_sites[lang]['nar_by2']
-            else:
-                ctx['NAR_BY_INFO'] = ctx['NAR_BY']
-        else:
-            ctx['REL_DATE'] = 'Release date'
-            ctx['REL_DATE_INFO'] = ctx['REL_DATE']
-            ctx['NAR_BY'] = 'Narrated By'
-            ctx['NAR_BY_INFO'] = 'Narrated by'
-
-    AUD_BASE_URL = 'https://' + str(base) + '/'
-    AUD_TITLE_URL = urlsearchtitle
-
-    AUD_BOOK_INFO_ARR = [
-        AUD_BASE_URL,
-        'pd/%s?ipRedirectOverride=true',
-    ]
-    ctx['AUD_BOOK_INFO'] = ''.join(AUD_BOOK_INFO_ARR)
-
-    AUD_ARTIST_SEARCH_URL_ARR = [
-        AUD_BASE_URL,
-        'search?searchAuthor=%s&ipRedirectOverride=true',
-    ]
-    ctx['AUD_ARTIST_SEARCH_URL'] = ''.join(AUD_ARTIST_SEARCH_URL_ARR)
-
-    AUD_ALBUM_SEARCH_URL_ARR = [
-        AUD_BASE_URL,
-        'search?',
-        AUD_TITLE_URL,
-        '%s&x=41&ipRedirectOverride=true',
-    ]
-    ctx['AUD_ALBUM_SEARCH_URL'] = ''.join(AUD_ALBUM_SEARCH_URL_ARR)
-
-    AUD_KEYWORD_SEARCH_URL_ARR = [
-        AUD_BASE_URL,
-        ('search?filterby=field-keywords&advsearchKeywords=%s'
-            '&x=41&ipRedirectOverride=true'),
-    ]
-    ctx['AUD_KEYWORD_SEARCH_URL'] = ''.join(AUD_KEYWORD_SEARCH_URL_ARR)
-
-    AUD_SEARCH_URL_ARR = [
-        AUD_BASE_URL,
-        'search?',
-        AUD_TITLE_URL,
-        '{0}&searchAuthor={1}&x=41&ipRedirectOverride=true',
-    ]
-    ctx['AUD_SEARCH_URL'] = ''.join(AUD_SEARCH_URL_ARR)
-
-    return ctx
 
 
 def Start():
@@ -579,8 +413,6 @@ class AudiobookAlbum(Agent.Album):
             # Score the album name
             scorebase1 = self.media.album
             scorebase2 = title.encode('utf-8')
-            # log.debug('scorebase1:    %s', scorebase1)
-            # log.debug('scorebase2:    %s', scorebase2)
 
             score = INITIAL_SCORE - Util.LevenshteinDistance(
                 scorebase1, scorebase2
@@ -589,8 +421,6 @@ class AudiobookAlbum(Agent.Album):
             if self.media.artist:
                 scorebase3 = self.media.artist
                 scorebase4 = author
-                # log.debug('scorebase3:    %s', scorebase3)
-                # log.debug('scorebase4:    %s', scorebase4)
                 score = INITIAL_SCORE - Util.LevenshteinDistance(
                     scorebase3, scorebase4
                 )
@@ -634,7 +464,8 @@ class AudiobookAlbum(Agent.Album):
         return info
 
     def search(self, results, media, lang, manual):
-        self.ctx = SetupUrls(Prefs['sitetype'], Prefs['site'], lang)
+        url_info = SiteUrl(Prefs['sitetype'], Prefs['site'], lang)
+        self.ctx = url_info.SetupUrls()
         self.LCL_IGNORE_SCORE = IGNORE_SCORE
         self.results = results
         self.media = media
@@ -884,16 +715,7 @@ class AudiobookAlbum(Agent.Album):
                 self.series_def = w.group(1)
                 self.volume_def = w.group(2)
 
-    def compile_metadata(self):
-        # Set the date and year if found.
-        if self.date is not None:
-            self.metadata.originally_available_at = self.date
-
-        # Add the genres
-        self.metadata.genres.clear()
-        self.metadata.genres.add(self.genre_parent)
-        self.metadata.genres.add(self.genre_child)
-
+    def parse_author_narrator(self):
         # Add Narrators to Styles
         narrators_list = self.narrator.split(",")
         narr_contributors_list = [
@@ -928,6 +750,7 @@ class AudiobookAlbum(Agent.Album):
             ]:
                 self.metadata.moods.add(author.strip())
 
+    def parse_series(self):
         # Clean series
         x = re.match("(.*)(: A .* Series)", self.series_def)
         if x:
@@ -955,6 +778,20 @@ class AudiobookAlbum(Agent.Album):
             if y:
                 self.title = y.group(1)
 
+    def compile_metadata(self):
+        # Set the date and year if found.
+        if self.date is not None:
+            self.metadata.originally_available_at = self.date
+
+        # Add the genres
+        self.metadata.genres.clear()
+        self.metadata.genres.add(self.genre_parent)
+        self.metadata.genres.add(self.genre_child)
+
+        self.parse_author_narrator()
+
+        self.parse_series()
+
         # Other metadata
         self.metadata.title = self.title
         self.metadata.title_sort = ' - '.join(
@@ -977,6 +814,8 @@ class AudiobookAlbum(Agent.Album):
         self.writeInfo()
 
     def update(self, metadata, media, lang, force=False):
+        url_info = SiteUrl(Prefs['sitetype'], Prefs['site'], lang)
+        self.ctx = url_info.SetupUrls()
         self.metadata = metadata
         self.media = media
         self.lang = lang
@@ -984,8 +823,6 @@ class AudiobookAlbum(Agent.Album):
             '***** UPDATING "%s" ID: %s - AUDIBLE v.%s *****',
             media.title, self.metadata.id, VERSION_NO
         )
-        self.ctx = SetupUrls(Prefs['sitetype'], Prefs['site'], lang)
-        self.metadata = metadata
 
         # Make url
         self.url = self.ctx['AUD_BOOK_INFO'] % self.metadata.id
@@ -1114,11 +951,8 @@ class AudiobookAlbum(Agent.Album):
         log.separator(log_level="info")
 
 
-def safe_unicode(s, encoding='utf-8'):
-    if s is None:
+def json_decode(output):
+    try:
+        return json.loads(output, encoding="utf-8")
+    except AttributeError:
         return None
-    if isinstance(s, basestring):
-        if isinstance(s, types.UnicodeType):
-            return s
-        return s.decode(encoding)
-    return str(s).decode(encoding)
