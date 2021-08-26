@@ -992,8 +992,8 @@ class AudiobookAlbum(Agent.Album):
 
         try:
             self.html = HTML.ElementFromURL(self.url, sleep=REQUEST_DELAY)
-        except Exception:
-            pass
+        except Exception as e:
+            log.info(e)
 
         self.date = None
         self.rating = None
