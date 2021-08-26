@@ -319,6 +319,7 @@ class AudiobookAlbum(Agent.Album):
             return
 
         if self.manual:
+            log.separator(msg="NOTE", log_level="info")
             log.info(
                 'You clicked \'fix match\'. '
                 'This may have returned no useful results because '
@@ -366,9 +367,13 @@ class AudiobookAlbum(Agent.Album):
             'normalizedName stripped = %s', self.normalizedName
         )
 
-        log.info(
-            '***** SEARCHING FOR "%s" - AUDIBLE v.%s *****',
-            self.normalizedName, VERSION_NO
+        log.separator(
+            msg=(
+                "SEARCHING FOR " + '"' + self.normalizedName + '"'
+            ) + (
+                    " - " + "AUDIBLE v" + VERSION_NO
+                ),
+            log_level="info"
         )
 
     def run_search(self):
@@ -378,7 +383,9 @@ class AudiobookAlbum(Agent.Album):
         itemId_full = None
         itemId = None
         valid_itemId = None
-        for f in self.found:
+
+        log.separator(msg="Search results", log_level="info")
+        for i, f in enumerate(self.found):
             url = f['url']
             log.debug('URL For Breakdown: %s', url)
 
@@ -455,10 +462,9 @@ class AudiobookAlbum(Agent.Album):
                     self.LCL_IGNORE_SCORE
                 )
 
-            if i != len(self.found):
-                log.separator()
-
-            i += 1
+            # Print separators for easy reading
+            if i <= len(self.found):
+                log.separator(log_level="info")
 
         info = sorted(info, key=lambda inf: inf['score'], reverse=True)
         return info
@@ -505,17 +511,6 @@ class AudiobookAlbum(Agent.Album):
             len(self.result),
             self.normalizedName
         )
-        i = 1
-        for f in self.result:
-            log.debug(
-                '    %s. (title) %s (author) %s (url)[%s]'
-                ' (date)(%s) (thumb){%s}',
-                i, f['title'], f['author'],
-                f['url'], str(f['date']), f['thumb']
-            )
-            i += 1
-
-        log.separator(log_level="info")
 
         info = self.run_search()
 
@@ -629,7 +624,7 @@ class AudiobookAlbum(Agent.Album):
                     '/div[3]/a/span/text()'
                 )
             )
-            log.separator(msg='XPATH SEARCH HIT')
+            log.separator(msg='XPATH SEARCH HIT', log_level="debug")
 
     def date_missing(self):
         for r in self.html.xpath(

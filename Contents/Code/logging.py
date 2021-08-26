@@ -31,7 +31,7 @@ class Logging:
             # Loop through each key/value
             for key, val in log_type.items():
                 if val:
-                    output = "{key:<15}{val}".format(
+                    output = "{key:<20}{val}".format(
                         key=key,
                         val=val
                         )
@@ -48,7 +48,7 @@ class Logging:
                 if val:
                     # Loop through dict's array
                     for item in val:
-                        output = ("{key:<15}{val}".format(
+                        output = ("{key:<20}{val}".format(
                             key=key,
                             val=item
                             )
