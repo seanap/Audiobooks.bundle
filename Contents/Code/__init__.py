@@ -8,7 +8,7 @@ import types
 from logging import Logging
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.25.1'
+VERSION_NO = '2021.08.25.2'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -25,6 +25,10 @@ THREAD_MAX = 20
 
 # Setup logger
 log = Logging()
+
+
+def ValidatePrefs():
+    log.debug('ValidatePrefs function call')
 
 
 def Start():
@@ -347,8 +351,6 @@ class AudiobookAlbum(Agent.Album):
                     'Custom album search for: ' + self.media.name
                 )
                 self.media.album = self.media.name
-        else:
-            log.info('Album search: ' + self.media.title)
 
     def format_title(self):
         # Normalize the name
@@ -801,9 +803,13 @@ class AudiobookAlbum(Agent.Album):
         self.metadata.studio = self.studio
         self.metadata.summary = self.synopsis
 
-        if not Prefs['disable_cover']:
+        if Prefs['cover_options'] == "Use Audible cover":
             self.metadata.posters[1] = Proxy.Media(HTTP.Request(self.thumb))
             self.metadata.posters.validate_keys(self.thumb)
+        elif Prefs['cover_options'] == "Download cover but don't overwrite existing":
+            self.metadata.posters[self.thumb] = Proxy.Media(
+                HTTP.Request(self.thumb), sort_order=1
+            )
 
         # Use rating only when available
         if self.rating:
