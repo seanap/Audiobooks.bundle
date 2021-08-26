@@ -38,7 +38,7 @@ def Start():
     HTTP.Headers['Accept-Encoding'] = 'gzip'
     log.separator(
         msg=(
-            " - " + "Audible Audiobooks Agent v" + VERSION_NO
+            "Audible Audiobooks Agent v" + VERSION_NO
         ),
         log_level="info"
     )
@@ -436,7 +436,7 @@ class AudiobookAlbum(Agent.Album):
                     scorebase3, scorebase4
                 )
 
-            log.info(msg=("Result #" + i), log_level="info")
+            log.info("Result #" + str(i + 1))
             # Log basic metadata
             data_to_log = [
                 {'ID is': valid_itemId},
