@@ -825,7 +825,7 @@ class AudiobookAlbum(Agent.Album):
         self.lang = lang
         log.separator(
             msg=(
-                "UPDATING" + ' "' + self.media.title + '" ' + (
+                "UPDATING" + self.media.title + (
                     "ID: " + self.metadata.id
                 )
             ),
