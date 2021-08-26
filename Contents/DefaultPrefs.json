@@ -10,17 +10,17 @@
     "default" : "www.audible.com"
 },{
 	"id": "disable_cover",
-	"label": "Disables the agent fetching artwork from Audible",
+	"label": "Disable the fetching artwork from Audible",
 	"type": "bool",
 	"default": "false"
 },{
 	"id": "no_overwrite_genre",
-	"label": "Leaves existing genres in place",
+	"label": "Leave existing genres in place",
 	"type": "bool",
 	"default": "false"
 },{
 	"id": "copyyear",
-	"label": "Uses copyright year instead of datePublished",
+	"label": "Use copyright year instead of datePublished",
 	"type": "bool",
 	"default": "false"
 },{
