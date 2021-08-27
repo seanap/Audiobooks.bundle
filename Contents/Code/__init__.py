@@ -166,34 +166,10 @@ class AudiobookAlbum(Agent.Album):
         url_info = SiteUrl(Prefs['sitetype'], Prefs['site'], lang)
         ctx = url_info.SetupUrls()
 
+        # Instantiate search helper
         search_helper = SearchTool(lang, manual, media, results)
-        """
-            The process needs to be as follows:
-            1. Search class is instantiated.
-            2. Search class is run linearly. This can be done 1 of 2 ways:
-                - Call helper in the class to run it itself.
-                - Call each function here, using the same object.
-            3. Search class returns necessary data for update function.
 
-            What does the output of these actions need to be, and in what form?
-            What do I need to run here vs there?
-        """
-
-        """
-            Functions I know I can call with object:
-            pre_search_logging
-            strip_title
-        """
         search_helper.pre_search_logging()
-
-        """
-            Functions I can't call with object
-            create_search_url
-            doSearch
-            before_xpath
-            after_xpath
-            run_search
-        """
 
         # Run helper before passing to SearchTool
         normalizedName = self.normalize_name(media.album)
@@ -273,8 +249,9 @@ class AudiobookAlbum(Agent.Album):
             html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         except Exception as e:
             log.info(e)
-
+        # Instantiate update helper
         update_helper = UpdateTool(force, lang, media, metadata, url)
+
         self.scrape_book_metadata(ctx, update_helper, html)
 
         if not update_helper.date:
@@ -556,7 +533,6 @@ class AudiobookAlbum(Agent.Album):
     """
 
     def scrape_book_metadata(self, ctx, helper, html):
-        # result = None
         for r in html.xpath('//div[contains (@id, "adbl_page_content")]'):
             author = self.getStringContentFromXPath(
                 r, '//li//a[contains (@class,"author-profile-link")][1]'
@@ -618,21 +594,6 @@ class AudiobookAlbum(Agent.Album):
             helper.thumb = thumb
             helper.title = title
 
-        #     result = {
-        #             'author': author,
-        #             'date': date,
-        #             'genre_child': genre_child,
-        #             'genre_parent': genre_parent,
-        #             'narrator': narrator,
-        #             'series': series,
-        #             'studio': studio,
-        #             'synopsis': synopsis,
-        #             'thumb': thumb,
-        #             'title': title,
-        #             'url': murl,
-        #         }
-        # return result
-
     def date_missing(self, helper, html):
         for r in html.xpath(
             '//script[contains (@type, "application/ld+json")]'
@@ -649,7 +610,6 @@ class AudiobookAlbum(Agent.Album):
             json_data = self.json_decode(page_content)
 
             helper.re_parse_with_date_published(json_data)
-            # return book_data
 
     def use_copyright_date(self, helper, html):
         cstring = None
@@ -679,7 +639,6 @@ class AudiobookAlbum(Agent.Album):
                     )
                 else:
                     helper.date = re.match(".?(\d{4}).*", cstring).group(1)
-            # return date
 
     def handle_series(self, helper, html):
         for r in html.xpath('//span[contains(@class, "seriesLabel")]'):
