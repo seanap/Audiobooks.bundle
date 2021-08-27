@@ -22,10 +22,10 @@ class SearchTool:
 
         #TODO these can probably be combined into one
         # Get the id
-        for item in url.split('/'):
+        for partial in url.split('/'):
             # IDs No longer start with just 'B0'
-            if re.match(r'^[0-9A-Z]{10,10}', item):
-                itemId_full = item
+            if re.match(r'^[0-9A-Z]{10,10}', partial):
+                itemId_full = partial
                 break
 
         # New Search results contain question marks after the ID

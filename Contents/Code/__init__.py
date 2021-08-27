@@ -316,10 +316,10 @@ class AudiobookAlbum(Agent.Album):
         Sorted by position in the search process
     """
 
-    def normalize_name(self, input):
+    def normalize_name(self, input_name):
         # Normalize the name
         normalizedName = String.StripDiacritics(
-            input
+            input_name
         )
         return normalizedName
 
