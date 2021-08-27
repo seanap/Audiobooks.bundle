@@ -6,11 +6,34 @@
     "id"      : "site",
     "label"   : "Select Audible site to use: ",
     "type"    : "enum",
-    "values"  : ["www.audible.com","www.audible.co.uk","www.audible.com.au","www.audible.de","www.audible.fr","www.audible.it"],
+    "values"  : [
+		"www.audible.com",
+		"www.audible.ca",
+		"www.audible.co.uk",
+		"www.audible.com.au",
+		"www.audible.de",
+		"www.audible.fr",
+		"www.audible.it"
+	],
     "default" : "www.audible.com"
 },{
+	"id": "cover_options",
+	"label": "How to handle artwork from Audible: ",
+	"type": "enum",
+	"values": [
+		"Use Audible cover",
+		"Download cover but don't overwrite existing",
+		"Don't download cover"
+	],
+	"default": "Use Audible cover"
+},{
+	"id": "no_overwrite_genre",
+	"label": "Leave existing genres in place",
+	"type": "bool",
+	"default": "false"
+},{
 	"id": "copyyear",
-	"label": "Uses copyright year instead of datePublished",
+	"label": "Use copyright year instead of datePublished",
 	"type": "bool",
 	"default": "false"
 },{
