@@ -14,32 +14,16 @@ class SearchTool:
         self.results = results
 
     def get_id_from_url(self, item):
-        itemId_full = None
-        itemId = None
-        valid_itemId = None
         url = item['url']
         log.debug('URL For Breakdown: %s', url)
 
-        #TODO these can probably be combined into one
-        # Get the id
-        for partial in url.split('/'):
-            # IDs No longer start with just 'B0'
-            if re.match(r'^[0-9A-Z]{10,10}', partial):
-                itemId_full = partial
-                break
+        # Find ASIN before ? in URL
+        asin = re.search(r'[0-9A-Z]{9}.+?(?=\?)', url).group(0)
+        if asin:
+            return asin
 
-        # New Search results contain question marks after the ID
-        for itemId in itemId_full.split('?'):
-            # IDs No longer start with just 'B0'
-            if re.match(r'^[0-9A-Z]{10,10}', itemId):
-                valid_itemId = itemId
-                break
-
-        if not valid_itemId:
-            log.info('No Match: %s', url)
-            return None
-
-        return valid_itemId
+        log.info('No Match: %s', url)
+        return None
 
     def pre_search_logging(self):
         log.separator(msg='ALBUM SEARCH', log_level="info")
