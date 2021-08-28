@@ -288,6 +288,12 @@ class AudiobookAlbum(Agent.Album):
             .replace("</p>", "\n")
         )
 
+        # Handle single genre result
+        if update_helper.genre_child:
+            genre_string = update_helper.genre_parent + ', ' + update_helper.genre_child
+        else:
+            genre_string = update_helper.genre_parent
+
         # Setup logging of all data in the array
         data_to_log = [
             {'date': update_helper.date},
@@ -295,7 +301,7 @@ class AudiobookAlbum(Agent.Album):
             {'author': update_helper.author},
             {'narrator': update_helper.narrator},
             {'series': update_helper.series},
-            {'genres': update_helper.genre_parent + ', ' + update_helper.genre_child},
+            {'genres': genre_string},
             {'studio': update_helper.studio},
             {'thumb': update_helper.thumb},
             {'rating': update_helper.rating},
@@ -699,7 +705,9 @@ class AudiobookAlbum(Agent.Album):
         if not Prefs['no_overwrite_genre']:
             helper.metadata.genres.clear()
             helper.metadata.genres.add(helper.genre_parent)
-            helper.metadata.genres.add(helper.genre_child)
+            # Not all books have 2 genres
+            if helper.genre_child:
+                helper.metadata.genres.add(helper.genre_child)
 
         self.parse_author_narrator(helper)
 
