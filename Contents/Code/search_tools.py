@@ -1,3 +1,4 @@
+from datetime import date
 import re
 # Import internal tools
 from logging import Logging
@@ -12,6 +13,11 @@ class SearchTool:
         self.manual = manual
         self.media = media
         self.results = results
+
+    def is_year_in_future(self, year):
+        current_year = (date.today().year)
+        if year > current_year:
+            return True
 
     def get_id_from_url(self, item):
         url = item['url']

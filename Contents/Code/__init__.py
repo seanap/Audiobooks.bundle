@@ -235,8 +235,8 @@ class AudiobookAlbum(Agent.Album):
 
         log.separator(
             msg=(
-                "UPDATING" + media.title + (
-                    "ID: " + metadata.id
+                "UPDATING: " + media.title + (
+                    " ID: " + metadata.id
                 )
             ),
             log_level="info"
@@ -473,20 +473,32 @@ class AudiobookAlbum(Agent.Album):
             if date is not None:
                 year = date.year
 
+                # Make sure this isn't a pre-order listing
+                if helper.is_year_in_future(year):
+                    continue
+
             # Score the album name
             scorebase1 = media.album
             scorebase2 = title.encode('utf-8')
-
-            score = INITIAL_SCORE - Util.LevenshteinDistance(
+            album_score = INITIAL_SCORE - Util.LevenshteinDistance(
                 scorebase1, scorebase2
             )
+            log.debug("Score from album: " + str(album_score))
 
+            # Score the author name
             if media.artist:
                 scorebase3 = media.artist
                 scorebase4 = author
-                score = INITIAL_SCORE - Util.LevenshteinDistance(
+                author_score = INITIAL_SCORE - Util.LevenshteinDistance(
                     scorebase3, scorebase4
                 )
+                log.debug("Score from author: " + str(author_score))
+                # Find the difference in score between name and author
+                score = (
+                    album_score + author_score
+                ) - INITIAL_SCORE
+            else:
+                score = album_score
 
             log.info("Result #" + str(i + 1))
             # Log basic metadata
