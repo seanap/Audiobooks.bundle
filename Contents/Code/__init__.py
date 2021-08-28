@@ -480,7 +480,7 @@ class AudiobookAlbum(Agent.Album):
                 year = date.year
 
                 # Make sure this isn't a pre-order listing
-                if helper.is_year_in_future(year):
+                if helper.check_if_preorder(date):
                     continue
 
             # Score the album name

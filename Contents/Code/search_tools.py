@@ -14,9 +14,9 @@ class SearchTool:
         self.media = media
         self.results = results
 
-    def is_year_in_future(self, year):
-        current_year = (date.today().year)
-        if year > current_year:
+    def check_if_preorder(self, book_date):
+        current_date = (date.today())
+        if book_date > current_date:
             return True
 
     def get_id_from_url(self, item):
