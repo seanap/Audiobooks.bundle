@@ -1,3 +1,4 @@
+from datetime import date
 import re
 # Import internal tools
 from logging import Logging
@@ -12,6 +13,11 @@ class SearchTool:
         self.manual = manual
         self.media = media
         self.results = results
+
+    def check_if_preorder(self, book_date):
+        current_date = (date.today())
+        if book_date > current_date:
+            return True
 
     def get_id_from_url(self, item):
         url = item['url']

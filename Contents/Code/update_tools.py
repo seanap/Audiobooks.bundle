@@ -55,6 +55,12 @@ class UpdateTool:
                     )
                 except AttributeError:
                     continue
+                except IndexError:
+                    log.info(
+                        '"' + self.title + '", '
+                        "only has one genre"
+                        )
+                    continue
 
     # Writes metadata information to log.
     def writeInfo(self):

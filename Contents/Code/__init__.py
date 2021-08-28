@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.27.1'
+VERSION_NO = '2021.08.28.1'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -235,8 +235,8 @@ class AudiobookAlbum(Agent.Album):
 
         log.separator(
             msg=(
-                "UPDATING" + media.title + (
-                    "ID: " + metadata.id
+                "UPDATING: " + media.title + (
+                    " ID: " + metadata.id
                 )
             ),
             log_level="info"
@@ -288,6 +288,12 @@ class AudiobookAlbum(Agent.Album):
             .replace("</p>", "\n")
         )
 
+        # Handle single genre result
+        if update_helper.genre_child:
+            genre_string = update_helper.genre_parent + ', ' + update_helper.genre_child
+        else:
+            genre_string = update_helper.genre_parent
+
         # Setup logging of all data in the array
         data_to_log = [
             {'date': update_helper.date},
@@ -295,7 +301,7 @@ class AudiobookAlbum(Agent.Album):
             {'author': update_helper.author},
             {'narrator': update_helper.narrator},
             {'series': update_helper.series},
-            {'genres': update_helper.genre_parent + ', ' + update_helper.genre_child},
+            {'genres': genre_string},
             {'studio': update_helper.studio},
             {'thumb': update_helper.thumb},
             {'rating': update_helper.rating},
@@ -473,20 +479,32 @@ class AudiobookAlbum(Agent.Album):
             if date is not None:
                 year = date.year
 
+                # Make sure this isn't a pre-order listing
+                if helper.check_if_preorder(date):
+                    continue
+
             # Score the album name
             scorebase1 = media.album
             scorebase2 = title.encode('utf-8')
-
-            score = INITIAL_SCORE - Util.LevenshteinDistance(
+            album_score = INITIAL_SCORE - Util.LevenshteinDistance(
                 scorebase1, scorebase2
             )
+            log.debug("Score from album: " + str(album_score))
 
+            # Score the author name
             if media.artist:
                 scorebase3 = media.artist
                 scorebase4 = author
-                score = INITIAL_SCORE - Util.LevenshteinDistance(
+                author_score = INITIAL_SCORE - Util.LevenshteinDistance(
                     scorebase3, scorebase4
                 )
+                log.debug("Score from author: " + str(author_score))
+                # Find the difference in score between name and author
+                score = (
+                    album_score + author_score
+                ) - INITIAL_SCORE
+            else:
+                score = album_score
 
             log.info("Result #" + str(i + 1))
             # Log basic metadata
@@ -687,7 +705,9 @@ class AudiobookAlbum(Agent.Album):
         if not Prefs['no_overwrite_genre']:
             helper.metadata.genres.clear()
             helper.metadata.genres.add(helper.genre_parent)
-            helper.metadata.genres.add(helper.genre_child)
+            # Not all books have 2 genres
+            if helper.genre_child:
+                helper.metadata.genres.add(helper.genre_child)
 
         self.parse_author_narrator(helper)
 
