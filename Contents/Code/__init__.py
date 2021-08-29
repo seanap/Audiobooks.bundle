@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.28.1'
+VERSION_NO = '2021.08.28.2'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -172,11 +172,13 @@ class AudiobookAlbum(Agent.Album):
         search_helper.pre_search_logging()
 
         # Run helper before passing to SearchTool
-        normalizedName = self.normalize_name(media.album)
+        normalizedName = self.normalize_name(search_helper.media.album)
         # Strip title of things like unabridged and spaces
         search_helper.strip_title(normalizedName)
+        # Validate author name
+        search_helper.validate_author_name()
         # Generate search url
-        searchUrl = self.create_search_url(ctx, media, search_helper.normalizedName)
+        searchUrl = self.create_search_url(ctx, search_helper)
         # Run actual search, and set the variable to it's return
         result = self.doSearch(ctx, searchUrl)
 
@@ -193,7 +195,7 @@ class AudiobookAlbum(Agent.Album):
             normalizedName
         )
 
-        info = self.run_search(search_helper, media, result)
+        info = self.run_search(search_helper, result)
 
         # Output the final results.
         log.separator(log_level="debug")
@@ -329,20 +331,20 @@ class AudiobookAlbum(Agent.Album):
         )
         return normalizedName
 
-    def create_search_url(self, ctx, media, normalizedName):
+    def create_search_url(self, ctx, helper):
         # Make the URL
-        if media.artist:
+        if helper.media.artist:
             searchUrl = ctx['AUD_SEARCH_URL'].format(
                 (
-                    String.Quote((normalizedName).encode('utf-8'), usePlus=True)
+                    String.Quote((helper.normalizedName).encode('utf-8'), usePlus=True)
                 ),
                 (
-                    String.Quote((media.artist).encode('utf-8'), usePlus=True)
+                    String.Quote((helper.media.artist).encode('utf-8'), usePlus=True)
                 )
             )
         else:
             searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (
-                String.Quote((normalizedName).encode('utf-8'), usePlus=True)
+                String.Quote((helper.normalizedName).encode('utf-8'), usePlus=True)
             )
         return  searchUrl
 
@@ -459,7 +461,7 @@ class AudiobookAlbum(Agent.Album):
             )
         return found
 
-    def run_search(self, helper, media, result):
+    def run_search(self, helper, result):
         # Walk the found items and gather extended information
         info = []
 
@@ -484,7 +486,7 @@ class AudiobookAlbum(Agent.Album):
                     continue
 
             # Score the album name
-            scorebase1 = media.album
+            scorebase1 = helper.media.album
             scorebase2 = title.encode('utf-8')
             album_score = INITIAL_SCORE - Util.LevenshteinDistance(
                 scorebase1, scorebase2
@@ -492,8 +494,8 @@ class AudiobookAlbum(Agent.Album):
             log.debug("Score from album: " + str(album_score))
 
             # Score the author name
-            if media.artist:
-                scorebase3 = media.artist
+            if helper.media.artist:
+                scorebase3 = helper.media.artist
                 scorebase4 = author
                 author_score = INITIAL_SCORE - Util.LevenshteinDistance(
                     scorebase3, scorebase4

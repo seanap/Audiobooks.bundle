@@ -17,6 +17,7 @@ class SearchTool:
     def check_if_preorder(self, book_date):
         current_date = (date.today())
         if book_date > current_date:
+            log.debug("Excluding pre-order book")
             return True
 
     def get_id_from_url(self, item):
@@ -107,3 +108,22 @@ class SearchTool:
         )
         # Give access of this variable to the class
         self.normalizedName = normalizedName
+
+    def validate_author_name(self):
+        """
+            Checks a list of known bad author names.
+            If matched, author name is set to None to prevent
+            it being used in search query.
+        """
+        strings_to_check = [
+            "[Unknown Artist]"
+        ]
+        for test_name in strings_to_check:
+            if self.media.artist == test_name:
+                self.media.artist = None
+                log.info(
+                    "Artist name seems to be bad, "
+                    "not using it in search."
+                    
+                    )
+                break
