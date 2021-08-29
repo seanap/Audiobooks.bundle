@@ -711,8 +711,8 @@ class AudiobookAlbum(Agent.Album):
             if helper.genre_child:
                 helper.metadata.genres.add(helper.genre_child)
 
-        self.parse_author_narrator(helper)
-
+        self.add_narrators_to_moods(helper)
+        self.add_authors_to_moods(helper)
         self.parse_series(helper)
 
         # Other metadata
@@ -743,7 +743,7 @@ class AudiobookAlbum(Agent.Album):
             helper.metadata.collections.add(helper.series2)
         helper.writeInfo()
 
-    def parse_author_narrator(self, helper):
+    def add_narrators_to_moods(self, helper):
         # Add Narrators to Styles
         narrators_list = helper.narrator.split(",")
         narr_contributors_list = [
@@ -759,6 +759,7 @@ class AudiobookAlbum(Agent.Album):
             ]:
                 helper.metadata.styles.add(narrator.strip())
 
+    def add_authors_to_moods(self, helper):
         # Add Authors to Moods
         author_list = helper.author.split(",")
         author_contributers_list = [
