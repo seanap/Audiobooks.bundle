@@ -790,10 +790,10 @@ class AudiobookAlbum(Agent.Album):
         """
             Adds book series' to moods, since collections are not supported
         """
-
-        helper.metadata.moods.add(helper.series)
+        if helper.series:
+            helper.metadata.moods.add("Series: " + helper.series)
         if helper.series2:
-            helper.metadata.moods.add(helper.series2)
+            helper.metadata.moods.add("Series: " + helper.series2)
 
     def parse_series(self, helper):
         # Clean series
