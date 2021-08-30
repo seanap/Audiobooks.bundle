@@ -80,11 +80,9 @@ class UpdateTool:
 
         # Log basic metadata stored in arrays
         multi_arr = [
-            # {'Collection': self.metadata.collections},
-            {'Genre': self.metadata.genres},
+            {'Genres & Series': self.metadata.genres},
             {'Moods(Authors)': self.metadata.moods},
             {'Styles(Narrators)': self.metadata.styles},
-            # {'Fan art URL': self.metadata.art},
         ]
         log.metadata_arrs(multi_arr, log_level="info")
 
