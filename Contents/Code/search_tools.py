@@ -124,6 +124,5 @@ class SearchTool:
                 log.info(
                     "Artist name seems to be bad, "
                     "not using it in search."
-                    
-                    )
+                )
                 break
