@@ -352,7 +352,6 @@ class AudiobookAlbum(Agent.Album):
         html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         found = []
 
-        log.separator(msg='just before new xpath line', log_level="debug")
         # Set append to the returned array from this function
         found = self.before_xpath(ctx, found, html)
 
