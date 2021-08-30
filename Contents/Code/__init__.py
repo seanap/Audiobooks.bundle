@@ -265,7 +265,6 @@ class AudiobookAlbum(Agent.Album):
                 self.use_copyright_date(update_helper, html)
 
             update_helper.date = self.getDateFromString(update_helper.date)
-
             self.handle_series(update_helper, html)
 
         # cleanup synopsis
@@ -664,7 +663,7 @@ class AudiobookAlbum(Agent.Album):
                     helper.date = re.match(".?(\d{4}).*", cstring).group(1)
 
     def handle_series(self, helper, html):
-        for r in html.xpath('//span[contains(@class, "seriesLabel")]'):
+        for r in html.xpath('//li[contains(@class, "seriesLabel")]'):
             helper.series = self.getStringContentFromXPath(
                 r, '//li[contains(@class, "seriesLabel")]//a[1]'
             )
@@ -807,17 +806,15 @@ class AudiobookAlbum(Agent.Album):
         if helper.series_def.endswith(checkseries):
             seriesshort = helper.series_def[:-len(checkseries)]
 
-            y = re.match(
-                "(.*)((: .* " + helper.volume_def[2:] + ": A .* Series)|"
-                "(((:|,|-) )((" + seriesshort + helper.volume_def + ")|"
-                "((?<!" + seriesshort + ", )(" + helper.volume_def[2:] + "))|"
-                "((The .*|Special) Edition)|"
-                "((?<!" + helper.volume_def[2:] + ": )An? .* "
-                "(Adventure|Novella|Series|Saga))|"
-                "(A Novel of the .*))|"
-                "( \(" + seriesshort + ", Book \d+; .*\))))$",
-                helper.title
-            )
+            pattern = r"""
+                (.*)((: .* " + volume_def[2:] + ": A .* Series)|
+                (((:|,|-) )((" + seriesshort + volume_def + ")|
+                ((?<!" + seriesshort + ", )(" + volume_def[2:] + "))|
+                ((The .*|Special) Edition)|
+                ((?<!" + volume_def[2:] + ": )An? .* (Adventure|Novella|Series|Saga))|
+                (A Novel of the .*))|
+                ( \(" + seriesshort + ", Book \d+; .*\))))$"""
+            y = re.match(re.compile(pattern, re.VERBOSE))
 
             if y:
                 helper.title = y.group(1)
