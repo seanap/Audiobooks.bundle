@@ -34,7 +34,7 @@ def ValidatePrefs():
 
 
 def Start():
-    # HTTP.ClearCache()
+    HTTP.ClearCache()
     HTTP.CacheTime = CACHE_1WEEK
     HTTP.Headers['User-agent'] = (
         'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.2; Trident/4.0;'
@@ -120,7 +120,7 @@ class AudiobookArtist(Agent.Artist):
         log.debug(
             '* Artist:           %s', media.artist
         )
-        log.debug(
+        log.error(
             '****************************************'
             'Not Ready For Artist Search Yet'
             '****************************************'
@@ -140,7 +140,7 @@ class AudiobookArtist(Agent.Artist):
                 try:
                     func(*args, **kargs)
                 except Exception as e:
-                    log.info(e)
+                    log.error(e)
                 queue.task_done()
             except Queue.Empty:
                 continue
@@ -184,7 +184,7 @@ class AudiobookAlbum(Agent.Album):
 
         # Write search result status to log
         if not result:
-            log.info(
+            log.warn(
                 'No results found for query "%s"',
                 normalizedName
             )
@@ -250,7 +250,7 @@ class AudiobookAlbum(Agent.Album):
         try:
             html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         except Exception as e:
-            log.info(e)
+            log.error(e)
 
         # Instantiate update helper
         update_helper = UpdateTool(force, lang, media, metadata, url)
@@ -627,7 +627,6 @@ class AudiobookAlbum(Agent.Album):
                 r'([^\\])(\\(?![bfnrt\'\"\\/]|u[A-Fa-f0-9]{4}))'
             )
             page_content = remove_inv_json_esc.sub(r'\1\\\2', page_content)
-            log.debug(page_content)
             json_data = self.json_decode(page_content)
 
             helper.re_parse_with_date_published(json_data)
@@ -887,7 +886,7 @@ class AudiobookAlbum(Agent.Album):
                 try:
                     func(*args, **kargs)
                 except Exception as e:
-                    log.info(e)
+                    log.error(e)
                 queue.task_done()
             except Queue.Empty:
                 continue

@@ -56,7 +56,7 @@ class UpdateTool:
                 except AttributeError:
                     continue
                 except IndexError:
-                    log.info(
+                    log.warn(
                         '"' + self.title + '", '
                         "only has one genre"
                         )
