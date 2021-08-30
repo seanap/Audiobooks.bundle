@@ -70,7 +70,7 @@ class AudiobookArtist(Agent.Artist):
     def getAnchorUrlFromXPath(self, source, query):
         anchor = source.xpath(query)
 
-        if len(anchor) == 0:
+        if not anchor:
             return None
 
         return anchor[0].get('href')
@@ -78,7 +78,7 @@ class AudiobookArtist(Agent.Artist):
     def getImageUrlFromXPath(self, source, query):
         img = source.xpath(query)
 
-        if len(img) == 0:
+        if not img:
             return None
 
         return img[0].get('src')
@@ -468,9 +468,9 @@ class AudiobookAlbum(Agent.Album):
         )
 
         # Because builtin sum() isn't available
-        sum=lambda numberlist:reduce(lambda x,y:x+y,numberlist,0)
+        sum_scores=lambda numberlist:reduce(lambda x,y:x+y,numberlist,0)
         # Subtract difference from initial score
-        score = INITIAL_SCORE - sum(all_scores)
+        score = INITIAL_SCORE - sum_scores(all_scores)
 
         log.info("Result #" + str(i + 1))
         # Log basic metadata
@@ -851,7 +851,7 @@ class AudiobookAlbum(Agent.Album):
     def getAnchorUrlFromXPath(self, source, query):
         anchor = source.xpath(query)
 
-        if len(anchor) == 0:
+        if not anchor:
             return None
 
         return anchor[0].get('href')
@@ -859,7 +859,7 @@ class AudiobookAlbum(Agent.Album):
     def getImageUrlFromXPath(self, source, query):
         img = source.xpath(query)
 
-        if len(img) == 0:
+        if not img:
             return None
 
         return img[0].get('src')

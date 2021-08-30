@@ -82,7 +82,7 @@ class SearchTool:
                 self.media.album = self.media.name
 
     def strip_title(self, normalizedName):
-        if len(normalizedName) == 0:
+        if not normalizedName:
             normalizedName = self.media.album
         log.debug(
             'normalizedName = %s', normalizedName
