@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2021.08.29.2](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.29.2) (2021-08-30)
+
+[Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/v2021.08.28.1...v2021.08.29.2)
+
+**Implemented enhancements:**
+
+- Refine score when multiple of same book [\#19](https://github.com/seanap/Audiobooks.bundle/issues/19)
+- Speed and scoring improvements [\#21](https://github.com/seanap/Audiobooks.bundle/pull/21) ([djdembeck](https://github.com/djdembeck))
+
 ## [v2021.08.28.1](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.28.1) (2021-08-28)
 
 [Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/2021.08.27.1...v2021.08.28.1)

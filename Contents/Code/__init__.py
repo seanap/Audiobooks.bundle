@@ -708,16 +708,10 @@ class AudiobookAlbum(Agent.Album):
         if helper.date is not None:
             helper.metadata.originally_available_at = helper.date
 
-        # Add the genres
-        if not Prefs['no_overwrite_genre']:
-            helper.metadata.genres.clear()
-            helper.metadata.genres.add(helper.genre_parent)
-            # Not all books have 2 genres
-            if helper.genre_child:
-                helper.metadata.genres.add(helper.genre_child)
-
-        self.add_narrators_to_moods(helper)
+        self.add_genres(helper)
+        self.add_narrators_to_styles(helper)
         self.add_authors_to_moods(helper)
+        self.add_series_to_moods(helper)
         self.parse_series(helper)
 
         # Other metadata
@@ -748,39 +742,39 @@ class AudiobookAlbum(Agent.Album):
         if helper.rating:
             helper.metadata.rating = float(helper.rating) * 2
 
-        # Collections if/when Plex supports them
-        # https://github.com/seanap/Audiobooks.bundle/issues/1#issuecomment-713191070
-        helper.metadata.collections.clear()
-        helper.metadata.collections.add(helper.series)
-        if helper.series2:
-            helper.metadata.collections.add(helper.series2)
         helper.writeInfo()
 
-    def add_narrators_to_moods(self, helper):
-        # Add Narrators to Styles
+    def add_genres(self, helper):
+        """
+            Add genre(s) to Plex genres where available and depending on preference.
+        """
+        if not Prefs['no_overwrite_genre']:
+            helper.metadata.genres.clear()
+            helper.metadata.genres.add(helper.genre_parent)
+            # Not all books have 2 genres
+            if helper.genre_child:
+                helper.metadata.genres.add(helper.genre_child)
+
+    def add_narrators_to_styles(self, helper):
+        """
+            Adds narrators to styles.
+        """
         narrators_list = helper.narrator.split(",")
-        narr_contributors_list = [
-            'full cast'
-        ]
         helper.metadata.styles.clear()
-        # Loop through narrators to check if it has contributor wording
+
         for narrator in narrators_list:
-            if not [
-                contrib for contrib in narr_contributors_list if (
-                    contrib in narrator.lower()
-                )
-            ]:
-                helper.metadata.styles.add(narrator.strip())
+            helper.metadata.styles.add(narrator.strip())
 
     def add_authors_to_moods(self, helper):
-        # Add Authors to Moods
+        """
+            Adds authors to moods, except for cases in contibutors list.
+        """
         author_list = helper.author.split(",")
         author_contributers_list = [
             'contributor',
             'translator',
             'foreword',
             'translated',
-            'full cast',
         ]
         helper.metadata.moods.clear()
         # Loop through authors to check if it has contributor wording
@@ -791,6 +785,15 @@ class AudiobookAlbum(Agent.Album):
                 )
             ]:
                 helper.metadata.moods.add(author.strip())
+
+    def add_series_to_moods(self, helper):
+        """
+            Adds book series' to moods, since collections are not supported
+        """
+
+        helper.metadata.moods.add(helper.series)
+        if helper.series2:
+            helper.metadata.moods.add(helper.series2)
 
     def parse_series(self, helper):
         # Clean series
