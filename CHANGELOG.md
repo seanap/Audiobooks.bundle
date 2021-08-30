@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2021.08.30.1](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.30.1) (2021-08-30)
+
+[Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/v2021.08.29.2...v2021.08.30.1)
+
+**Implemented enhancements:**
+
+- Add log levels to prefs [\#14](https://github.com/seanap/Audiobooks.bundle/issues/14)
+- Use real log levels [\#24](https://github.com/seanap/Audiobooks.bundle/pull/24) ([djdembeck](https://github.com/djdembeck))
+- Map series' to moods, code quality improvements [\#23](https://github.com/seanap/Audiobooks.bundle/pull/23) ([djdembeck](https://github.com/djdembeck))
+
 ## [v2021.08.29.2](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.29.2) (2021-08-30)
 
 [Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/v2021.08.28.1...v2021.08.29.2)

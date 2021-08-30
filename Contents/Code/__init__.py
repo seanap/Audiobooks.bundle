@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.30.1'
+VERSION_NO = '2021.08.30.2'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -677,7 +677,7 @@ class AudiobookAlbum(Agent.Album):
                 r, '//li[contains(@class, "seriesLabel")]/text()[2]'
             ).strip()
             if helper.volume == ",":
-                helper.helper.volume = ""
+                helper.volume = ""
             helper.volume2 = self.getStringContentFromXPath(
                 r, '//li[contains(@class, "seriesLabel")]/text()[3]'
             ).strip()
@@ -685,7 +685,7 @@ class AudiobookAlbum(Agent.Album):
                 helper.volume2 = ""
 
             helper.volume_def = (
-                helper.helper.volume2 if helper.volume2 else helper.volume
+                helper.volume2 if helper.volume2 else helper.volume
             )
 
         # fix series when audible 'forgets' the series link…
