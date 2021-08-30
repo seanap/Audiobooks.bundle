@@ -1,5 +1,6 @@
 # SeaNap's Audiobook (Audible) metadata agent
 
+[![CodeFactor](https://www.codefactor.io/repository/github/seanap/audiobooks.bundle/badge)](https://www.codefactor.io/repository/github/seanap/audiobooks.bundle)
 ## What is this?
 A Plex Metadata Agent for Audiobooks stored in a music library.
 

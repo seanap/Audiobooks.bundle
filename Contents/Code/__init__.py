@@ -10,11 +10,11 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.28.1'
+VERSION_NO = '2021.08.29.2'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
-REQUEST_DELAY = 10
+REQUEST_DELAY = 1
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -23,7 +23,7 @@ GOOD_SCORE = 98
 # Any score lower than this will be ignored.
 IGNORE_SCORE = 45
 
-THREAD_MAX = 20
+#THREAD_MAX = 20
 
 # Setup logger
 log = Logging()
@@ -172,11 +172,13 @@ class AudiobookAlbum(Agent.Album):
         search_helper.pre_search_logging()
 
         # Run helper before passing to SearchTool
-        normalizedName = self.normalize_name(media.album)
+        normalizedName = self.normalize_name(search_helper.media.album)
         # Strip title of things like unabridged and spaces
         search_helper.strip_title(normalizedName)
+        # Validate author name
+        search_helper.validate_author_name()
         # Generate search url
-        searchUrl = self.create_search_url(ctx, media, search_helper.normalizedName)
+        searchUrl = self.create_search_url(ctx, search_helper)
         # Run actual search, and set the variable to it's return
         result = self.doSearch(ctx, searchUrl)
 
@@ -193,7 +195,7 @@ class AudiobookAlbum(Agent.Album):
             normalizedName
         )
 
-        info = self.run_search(search_helper, media, result)
+        info = self.run_search(search_helper, result)
 
         # Output the final results.
         log.separator(log_level="debug")
@@ -249,6 +251,7 @@ class AudiobookAlbum(Agent.Album):
             html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         except Exception as e:
             log.info(e)
+
         # Instantiate update helper
         update_helper = UpdateTool(force, lang, media, metadata, url)
 
@@ -262,7 +265,6 @@ class AudiobookAlbum(Agent.Album):
                 self.use_copyright_date(update_helper, html)
 
             update_helper.date = self.getDateFromString(update_helper.date)
-
             self.handle_series(update_helper, html)
 
         # cleanup synopsis
@@ -329,20 +331,20 @@ class AudiobookAlbum(Agent.Album):
         )
         return normalizedName
 
-    def create_search_url(self, ctx, media, normalizedName):
+    def create_search_url(self, ctx, helper):
         # Make the URL
-        if media.artist:
+        if helper.media.artist:
             searchUrl = ctx['AUD_SEARCH_URL'].format(
                 (
-                    String.Quote((normalizedName).encode('utf-8'), usePlus=True)
+                    String.Quote((helper.normalizedName).encode('utf-8'), usePlus=True)
                 ),
                 (
-                    String.Quote((media.artist).encode('utf-8'), usePlus=True)
+                    String.Quote((helper.media.artist).encode('utf-8'), usePlus=True)
                 )
             )
         else:
             searchUrl = ctx['AUD_KEYWORD_SEARCH_URL'] % (
-                String.Quote((normalizedName).encode('utf-8'), usePlus=True)
+                String.Quote((helper.normalizedName).encode('utf-8'), usePlus=True)
             )
         return  searchUrl
 
@@ -350,13 +352,8 @@ class AudiobookAlbum(Agent.Album):
         html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
         found = []
 
-        log.separator(msg='just before new xpath line', log_level="debug")
         # Set append to the returned array from this function
         found = self.before_xpath(ctx, found, html)
-
-        log.separator(msg='just after new xpath line', log_level="debug")
-        # Set append to the returned array from this function
-        found = self.after_xpath(ctx, found, html)
 
         return found
 
@@ -378,6 +375,12 @@ class AudiobookAlbum(Agent.Album):
             )
             datetext = re.sub(r'[^0-9\-]', '', datetext)
             date = self.getDateFromString(datetext)
+            language = self.getStringContentFromXPath(
+                r, (
+                    u'div/div/div/div/div/div/span/ul/li'
+                    '[contains (@class,"languageLabel")]/span'
+                    )
+            ).split()[1]
             narrator = self.getStringContentFromXPath(
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
@@ -403,6 +406,7 @@ class AudiobookAlbum(Agent.Album):
                 {
                     'author': author,
                     'date': date,
+                    'language': language,
                     'narrator': narrator,
                     'thumb': thumb,
                     'title': title,
@@ -411,55 +415,7 @@ class AudiobookAlbum(Agent.Album):
             )
         return found
 
-    def after_xpath(self, ctx, found, html):
-        for r in html.xpath(
-            '//div[contains (@class, "adbl-search-result")]'
-        ):
-            author = self.getStringContentFromXPath(
-                r, (
-                        'div/div/ul/li/'
-                        '/a[contains (@class,"author-profile-link")][1]'
-                    )
-            )
-            date = self.getDateFromString(
-                self.getStringContentFromXPath(
-                    r, (
-                        u'div/div/ul/li[contains (., "{0}")]'
-                        '/span[2]//text()'
-                        ).format(
-                        ctx['REL_DATE']
-                    )
-                )
-            )
-            murl = self.getAnchorUrlFromXPath(
-                r, 'div/div/div/div/a[1]'
-            )
-            narrator = self.getStringContentFromXPath(
-                r, u'div/div/ul/li[contains (., "{0}")]//a[1]'.format(
-                    ctx['NAR_BY']
-                )
-            )
-            thumb = self.getImageUrlFromXPath(
-                r, 'div[contains (@class,"adbl-prod-image-sample-cont")]/a/img'
-            )
-            title = self.getStringContentFromXPath(
-                r, 'div/div/div/div/a[1]'
-            )
-            log.separator(msg='XPATH SEARCH HIT', log_level="debug")
-
-            found.append(
-                {
-                    'author': author,
-                    'date': date,
-                    'narrator': narrator,
-                    'thumb': thumb,
-                    'title': title,
-                    'url': murl,
-                }
-            )
-        return found
-
-    def run_search(self, helper, media, result):
+    def run_search(self, helper, result):
         # Walk the found items and gather extended information
         info = []
 
@@ -469,13 +425,8 @@ class AudiobookAlbum(Agent.Album):
             if not valid_itemId:
                 continue
 
-            title = f['title']
-            thumb = f['thumb']
             date = f['date']
             year = ''
-            author = f['author']
-            narrator = f['narrator']
-
             if date is not None:
                 year = date.year
 
@@ -483,59 +434,7 @@ class AudiobookAlbum(Agent.Album):
                 if helper.check_if_preorder(date):
                     continue
 
-            # Score the album name
-            scorebase1 = media.album
-            scorebase2 = title.encode('utf-8')
-            album_score = INITIAL_SCORE - Util.LevenshteinDistance(
-                scorebase1, scorebase2
-            )
-            log.debug("Score from album: " + str(album_score))
-
-            # Score the author name
-            if media.artist:
-                scorebase3 = media.artist
-                scorebase4 = author
-                author_score = INITIAL_SCORE - Util.LevenshteinDistance(
-                    scorebase3, scorebase4
-                )
-                log.debug("Score from author: " + str(author_score))
-                # Find the difference in score between name and author
-                score = (
-                    album_score + author_score
-                ) - INITIAL_SCORE
-            else:
-                score = album_score
-
-            log.info("Result #" + str(i + 1))
-            # Log basic metadata
-            data_to_log = [
-                {'ID is': valid_itemId},
-                {'Title is': title},
-                {'Author is': author},
-                {'Narrator is': narrator},
-                {'Date is ': str(date)},
-                {'Score is': str(score)},
-                {'Thumb is': thumb},
-            ]
-            log.metadata(data_to_log, log_level="info")
-
-            if score >= IGNORE_SCORE:
-                info.append(
-                    {
-                        'id': valid_itemId,
-                        'title': title,
-                        'year': year,
-                        'date': date,
-                        'score': score,
-                        'thumb': thumb,
-                        'artist': author
-                    }
-                )
-            else:
-                log.info(
-                    '# Score is below ignore boundary (%s)... Skipping!',
-                    IGNORE_SCORE
-                )
+            self.score_result(f, helper, i, info, valid_itemId, year)
 
             # Print separators for easy reading
             if i <= len(result):
@@ -543,6 +442,110 @@ class AudiobookAlbum(Agent.Album):
 
         info = sorted(info, key=lambda inf: inf['score'], reverse=True)
         return info
+
+    def score_result(self, f, helper, i, info, valid_itemId, year):
+        author = f['author']
+        date = f['date']
+        language = f['language']
+        narrator = f['narrator']
+        thumb = f['thumb']
+        title = f['title']
+
+        # Array to hold score points for processing
+        all_scores = []
+
+        # Album name score
+        all_scores.append(
+            self.score_album(helper, title)
+        )
+        # Author name score
+        all_scores.append(
+            self.score_author(author, helper)
+        )
+        # Library language score
+        all_scores.append(
+            self.score_language(helper, language)
+        )
+
+        # Because builtin sum() isn't available
+        sum=lambda numberlist:reduce(lambda x,y:x+y,numberlist,0)
+        # Subtract difference from initial score
+        score = INITIAL_SCORE - sum(all_scores)
+
+        log.info("Result #" + str(i + 1))
+        # Log basic metadata
+        data_to_log = [
+            {'ID is': valid_itemId},
+            {'Title is': title},
+            {'Author is': author},
+            {'Narrator is': narrator},
+            {'Date is ': str(date)},
+            {'Score is': str(score)},
+            {'Thumb is': thumb},
+        ]
+        log.metadata(data_to_log, log_level="info")
+
+        if score >= IGNORE_SCORE:
+            info.append(
+                {
+                    'id': valid_itemId,
+                    'title': title,
+                    'year': year,
+                    'date': date,
+                    'score': score,
+                    'thumb': thumb,
+                    'artist': author
+                }
+            )
+        else:
+            log.info(
+                '# Score is below ignore boundary (%s)... Skipping!',
+                IGNORE_SCORE
+            )
+
+    def score_album(self, helper, title):
+        """
+            Compare the input album similarity to the search result album.
+            Score is calculated with LevenshteinDistance
+        """
+        scorebase1 = helper.media.album
+        scorebase2 = title.encode('utf-8')
+        album_score = Util.LevenshteinDistance(
+            scorebase1, scorebase2
+        )
+        log.debug("Score from album: " + str(album_score))
+        return album_score
+
+    def score_author(self, author, helper):
+        """
+            Compare the input author similarity to the search result author.
+            Score is calculated with LevenshteinDistance
+        """
+        if helper.media.artist:
+            scorebase3 = helper.media.artist
+            scorebase4 = author
+            author_score = Util.LevenshteinDistance(
+                scorebase3, scorebase4
+            )
+            log.debug("Score from author: " + str(author_score))
+            return author_score
+
+    def score_language(self, helper, language):
+        """
+            Compare the library language to search results
+            and knock off 2 points if they don't match.
+        """
+        lang_dict = {
+            Locale.Language.English: 'English',
+            'de': 'German',
+            'fr': 'French',
+            'it': 'Italian'
+        }
+
+        if language != lang_dict[helper.lang]:
+            log.debug("Book is not library language, deduct 2 points")
+            return 2
+        return 0
 
     """
         Update functions that require PMS imports,
@@ -659,7 +662,7 @@ class AudiobookAlbum(Agent.Album):
                     helper.date = re.match(".?(\d{4}).*", cstring).group(1)
 
     def handle_series(self, helper, html):
-        for r in html.xpath('//span[contains(@class, "seriesLabel")]'):
+        for r in html.xpath('//li[contains(@class, "seriesLabel")]'):
             helper.series = self.getStringContentFromXPath(
                 r, '//li[contains(@class, "seriesLabel")]//a[1]'
             )
@@ -667,7 +670,9 @@ class AudiobookAlbum(Agent.Album):
                 r, '//li[contains(@class, "seriesLabel")]//a[2]'
             )
 
-            helper.series_def = helper.series2 if helper.series2 else helper.series
+            helper.series_def = (
+                helper.series2 if helper.series2 else helper.series
+            )
 
             helper.volume = self.getStringContentFromXPath(
                 r, '//li[contains(@class, "seriesLabel")]/text()[2]'
@@ -680,7 +685,9 @@ class AudiobookAlbum(Agent.Album):
             if helper.volume2 == ",":
                 helper.volume2 = ""
 
-            helper.volume_def = helper.helper.volume2 if helper.volume2 else helper.volume
+            helper.volume_def = (
+                helper.helper.volume2 if helper.volume2 else helper.volume
+            )
 
         # fix series when audible 'forgets' the series link…
         if not helper.series_def:
@@ -709,22 +716,30 @@ class AudiobookAlbum(Agent.Album):
             if helper.genre_child:
                 helper.metadata.genres.add(helper.genre_child)
 
-        self.parse_author_narrator(helper)
-
+        self.add_narrators_to_moods(helper)
+        self.add_authors_to_moods(helper)
         self.parse_series(helper)
 
         # Other metadata
         helper.metadata.title = helper.title
         helper.metadata.title_sort = ' - '.join(
-            filter(None, [(helper.series_def + helper.volume_def), helper.title])
+            filter(
+                None, [(helper.series_def + helper.volume_def), helper.title]
+            )
         )
         helper.metadata.studio = helper.studio
         helper.metadata.summary = helper.synopsis
 
-        if Prefs['cover_options'] == "Use Audible cover":
-            helper.metadata.posters[1] = Proxy.Media(HTTP.Request(helper.thumb))
+        if Prefs['cover_options'] == (
+            "Use Audible cover"
+        ):
+            helper.metadata.posters[1] = Proxy.Media(
+                HTTP.Request(helper.thumb)
+            )
             helper.metadata.posters.validate_keys(helper.thumb)
-        elif Prefs['cover_options'] == "Download cover but don't overwrite existing":
+        elif Prefs['cover_options'] == (
+            "Download cover but don't overwrite existing"
+        ):
             helper.metadata.posters[helper.thumb] = Proxy.Media(
                 HTTP.Request(helper.thumb), sort_order=1
             )
@@ -741,7 +756,7 @@ class AudiobookAlbum(Agent.Album):
             helper.metadata.collections.add(helper.series2)
         helper.writeInfo()
 
-    def parse_author_narrator(self, helper):
+    def add_narrators_to_moods(self, helper):
         # Add Narrators to Styles
         narrators_list = helper.narrator.split(",")
         narr_contributors_list = [
@@ -757,6 +772,7 @@ class AudiobookAlbum(Agent.Album):
             ]:
                 helper.metadata.styles.add(narrator.strip())
 
+    def add_authors_to_moods(self, helper):
         # Add Authors to Moods
         author_list = helper.author.split(",")
         author_contributers_list = [
@@ -789,15 +805,20 @@ class AudiobookAlbum(Agent.Album):
         if helper.series_def.endswith(checkseries):
             seriesshort = helper.series_def[:-len(checkseries)]
 
-            y = re.match(
-                "(.*)((: .* " + helper.volume_def[2:] + ": A .* Series)|"
-                "(((:|,|-) )((" + seriesshort + helper.volume_def + ")|"
-                "((?<!" + seriesshort + ", )(" + helper.volume_def[2:] + "))|"
-                "((The .*|Special) Edition)|"
-                "((?<!" + helper.volume_def[2:] + ": )An? .* "
-                "(Adventure|Novella|Series|Saga))|"
-                "(A Novel of the .*))|"
-                "( \(" + seriesshort + ", Book \d+; .*\))))$",
+            y = re.search(
+                "(.*)((: .* " + helper.volume_def[2:] +
+                ": A .* Series)|(((:|,|-) )((" +
+                seriesshort + helper.volume_def +
+                ")|((?<!" +
+                seriesshort +
+                ", )(" +
+                helper.volume_def[2:] +
+                "))|((The .*|Special) Edition)|((?<!" +
+                helper.volume_def[2:] +
+                ": )An? .* (Adventure|Novella|Series|Saga))"
+                "|(A Novel of the .*))|( \(" +
+                seriesshort +
+                ", Book \d+; .*\))))$",
                 helper.title
             )
 
