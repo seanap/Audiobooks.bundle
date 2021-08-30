@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.29.1'
+VERSION_NO = '2021.08.29.2'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
@@ -806,15 +806,22 @@ class AudiobookAlbum(Agent.Album):
         if helper.series_def.endswith(checkseries):
             seriesshort = helper.series_def[:-len(checkseries)]
 
-            pattern = r"""
-                (.*)((: .* " + volume_def[2:] + ": A .* Series)|
-                (((:|,|-) )((" + seriesshort + volume_def + ")|
-                ((?<!" + seriesshort + ", )(" + volume_def[2:] + "))|
-                ((The .*|Special) Edition)|
-                ((?<!" + volume_def[2:] + ": )An? .* (Adventure|Novella|Series|Saga))|
-                (A Novel of the .*))|
-                ( \(" + seriesshort + ", Book \d+; .*\))))$"""
-            y = re.match(re.compile(pattern, re.VERBOSE))
+            y = re.search(
+                "(.*)((: .* " + helper.volume_def[2:] +
+                ": A .* Series)|(((:|,|-) )((" +
+                seriesshort + helper.volume_def +
+                ")|((?<!" +
+                seriesshort +
+                ", )(" +
+                helper.volume_def[2:] +
+                "))|((The .*|Special) Edition)|((?<!" +
+                helper.volume_def[2:] +
+                ": )An? .* (Adventure|Novella|Series|Saga))"
+                "|(A Novel of the .*))|( \(" +
+                seriesshort +
+                ", Book \d+; .*\))))$",
+                helper.title
+            )
 
             if y:
                 helper.title = y.group(1)
