@@ -17,7 +17,7 @@ class SearchTool:
     def check_if_preorder(self, book_date):
         current_date = (date.today())
         if book_date > current_date:
-            log.debug("Excluding pre-order book")
+            log.info("Excluding pre-order book")
             return True
 
     def get_id_from_url(self, item):
@@ -29,7 +29,7 @@ class SearchTool:
         if asin:
             return asin
 
-        log.info('No Match: %s', url)
+        log.warn('No Match: %s', url)
         return None
 
     def pre_search_logging(self):

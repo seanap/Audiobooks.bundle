@@ -1,16 +1,50 @@
 class Logging:
-    # Only prints message with debug mode
     def debug(self, message, *args):
-        if Prefs['debug']:
-            return Log(message, *args)
+        """
+            Prints passed message with DEBUG TYPE,
+            when DEBUG pref enabled.
+        """
+        if Prefs['logging_level'] == "DEBUG":
+            return Log.Debug(message, *args)
 
     # Prints any message you give
     def info(self, message, *args):
-        return Log(message, *args)
+        """
+            Prints passed message with INFO TYPE,
+            when INFO or DEBUG pref enabled.
+        """
+        if Prefs['logging_level'] == "DEBUG" or (
+            Prefs['logging_level'] == "INFO"
+        ):
+            return Log(message, *args)
+
+    def warning(self, message, *args):
+        """
+            Prints passed message with INFO TYPE,
+            when DEBUG, INFO or WARN pref enabled.
+        """
+        if Prefs['logging_level'] == "DEBUG" or (
+            Prefs['logging_level'] == "INFO") or (
+                Prefs['logging_level'] == "WARN"
+                ):
+            # No builtin warn, so use info level for it
+            return Log(message, *args)
+
+    def error(self, message, *args):
+        """
+            Prints passed message with ERROR TYPE,
+            when DEBUG, INFO, WARN or ERROR pref enabled.
+        """
+        if Prefs['logging_level'] == "DEBUG" or (
+            Prefs['logging_level'] == "INFO") or (
+                Prefs['logging_level'] == "WARN") or (
+                    Prefs['logging_level'] == "ERROR"
+                    ):
+            return Log.Error(message, *args)
 
     # For the below logging:
     # Default level is info
-    # Set debug by calling ('sometext', 'debug')
+    # Set debug by calling (msg='sometext', log_level='debug')
 
     # Prints a bunch of divider chars like ---
     def separator(self, msg=None, log_level="info"):

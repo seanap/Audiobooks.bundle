@@ -37,8 +37,14 @@
 	"type": "bool",
 	"default": "false"
 },{
-	"id": "debug",
-	"label": "Ouput debugging info in logs",
-	"type": "bool",
-	"default": "false"
+	"id": "logging_level",
+	"label": "Level of plugin logging: ",
+	"type": "enum",
+	"values": [
+		"DEBUG",
+		"INFO",
+		"WARN",
+		"ERROR"
+	],
+	"default": "WARN"
 }]
