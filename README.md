@@ -37,17 +37,18 @@ This version allows for better filtering and cleaner browsing in plex and variou
 | id3 Tag       | Plex Tag|
 | ------------- | ---------------- |
 | ALBUM         | Title            |
-| ALBUMARTIST   | Author           |
+| ALBUMARTIST   | Author of Album  |
 | ALBUMSORT     | Sort Album       |
 | Genre1/Genre2 | Genre1, Genre2   |
 | cover         | Poster           |
+| ARTIST        | Artists on Track |
 
 | Scrapped by Audible Agent | Plex Tag|
 | ------------- | ---------------- |
 | Narrator      | Style            |
+| Series        | Mood             |
 | Release Date  | Originally Available |
 | Publisher's Summary | Review     |
-| Series Title  | Collection (not working atm) |
 | Production Studio | Record Label |
 
 
