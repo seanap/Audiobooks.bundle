@@ -1,4 +1,4 @@
-# SeaNap's Audiobook (Audible) metadata agent
+# Audiobook (Audible) metadata agent
 
 [![CodeFactor](https://www.codefactor.io/repository/github/seanap/audiobooks.bundle/badge)](https://www.codefactor.io/repository/github/seanap/audiobooks.bundle)
 ## What is this?
@@ -91,4 +91,4 @@ If you're NOT in the US, or just want more flexibility with your searches you ha
 
 -You can filter by the various tags that are added to each book. Be it author, series, narrator, etc.
 
--Orignal and bulk of code by Macr0dev https://github.com/macr0dev/Audiobooks.bundle
+-Orignal code by Macr0dev https://github.com/macr0dev/Audiobooks.bundle
