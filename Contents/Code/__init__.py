@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.30.2'
+VERSION_NO = '2021.08.30.3'
 
 # Delay used when requesting HTML,
 # may be good to have to prevent being banned from the site
