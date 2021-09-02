@@ -10,11 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.08.30.3'
-
-# Delay used when requesting HTML,
-# may be good to have to prevent being banned from the site
-REQUEST_DELAY = 1
+VERSION_NO = '2021.09.02.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -90,7 +86,7 @@ class AudiobookArtist(Agent.Artist):
         return None
 
     def doSearch(self, ctx, url):
-        html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
+        html = HTML.ElementFromURL(url)
         found = []
 
         for r in html.xpath('//div[a/img[@class="yborder"]]'):
@@ -248,7 +244,7 @@ class AudiobookAlbum(Agent.Album):
         url = ctx['AUD_BOOK_INFO'] % metadata.id
 
         try:
-            html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
+            html = HTML.ElementFromURL(url)
         except Exception as e:
             log.error(e)
 
@@ -349,7 +345,7 @@ class AudiobookAlbum(Agent.Album):
         return  searchUrl
 
     def doSearch(self, ctx, url):
-        html = HTML.ElementFromURL(url, sleep=REQUEST_DELAY)
+        html = HTML.ElementFromURL(url)
         found = []
 
         # Set append to the returned array from this function
@@ -607,7 +603,6 @@ class AudiobookAlbum(Agent.Album):
             helper.date = date
             helper.genre_child = genre_child
             helper.genre_parent = genre_parent
-            # helper.url = murl
             helper.narrator = narrator
             helper.series = series
             helper.studio = studio
