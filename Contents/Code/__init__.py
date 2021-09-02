@@ -243,11 +243,11 @@ class AudiobookAlbum(Agent.Album):
 
         try:
             html = HTML.ElementFromURL(url)
-        except Exception as e:
-            log.error(e)
         except UnboundLocalError as e:
             log.error("Title no longer avaible on Audible: " + metadata.id)
             return
+        except Exception as e:
+            log.error(e)
 
         # Instantiate update helper
         update_helper = UpdateTool(force, lang, media, metadata, url)
