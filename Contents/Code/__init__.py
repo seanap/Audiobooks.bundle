@@ -19,8 +19,6 @@ GOOD_SCORE = 98
 # Any score lower than this will be ignored.
 IGNORE_SCORE = 45
 
-#THREAD_MAX = 20
-
 # Setup logger
 log = Logging()
 
@@ -116,7 +114,7 @@ class AudiobookArtist(Agent.Artist):
         log.debug(
             '* Artist:           %s', media.artist
         )
-        log.error(
+        log.warn(
             '****************************************'
             'Not Ready For Artist Search Yet'
             '****************************************'
@@ -247,6 +245,9 @@ class AudiobookAlbum(Agent.Album):
             html = HTML.ElementFromURL(url)
         except Exception as e:
             log.error(e)
+        except UnboundLocalError as e:
+            log.error("Title no longer avaible on Audible: " + metadata.id)
+            return
 
         # Instantiate update helper
         update_helper = UpdateTool(force, lang, media, metadata, url)

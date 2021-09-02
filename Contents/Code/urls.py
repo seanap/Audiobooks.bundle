@@ -1,5 +1,8 @@
 from logging import Logging
 
+# Setup logger
+log = Logging()
+
 
 class SiteUrl:
     intl_sites = {
@@ -190,7 +193,3 @@ class SiteUrl:
         self.set_context_urls()
 
         return self.context
-
-
-# Setup logger
-log = Logging()

@@ -38,10 +38,14 @@ class UpdateTool:
                 for c in data['author']:
                     author_array.append(c['name'])
                 self.author = ",".join(author_array)
-
+                
                 narrator_array = []
-                for c in data['readBy']:
-                    narrator_array.append(c['name'])
+                if 'readBy' in data:
+                    for c in data['readBy']:
+                        narrator_array.append(c['name'])
+                else:
+                    log.warn("No narrator listed for: " + self.metadata.id)
+                    narrator_array.append("[Unknown Artist]")
                 self.narrator = ",".join(narrator_array)
                 self.studio = data['publisher']
                 self.synopsis = data['description']
