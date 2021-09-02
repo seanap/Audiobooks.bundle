@@ -18,7 +18,7 @@ class Logging:
         ):
             return Log(message, *args)
 
-    def warning(self, message, *args):
+    def warn(self, message, *args):
         """
             Prints passed message with INFO TYPE,
             when DEBUG, INFO or WARN pref enabled.
