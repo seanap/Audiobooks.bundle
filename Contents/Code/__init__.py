@@ -387,6 +387,7 @@ class AudiobookAlbum(Agent.Album):
                 cleaned_datetext = re.search(r'\d{2}[.]\d{2}[.]\d{4}', datetext)
 
             date = self.getDateFromString(cleaned_datetext.group(0))
+            log.debug("Parsed Date: " + str(date))
             language = self.getStringContentFromXPath(
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
@@ -555,6 +556,7 @@ class AudiobookAlbum(Agent.Album):
         }
 
         if language != lang_dict[helper.lang]:
+            log.debug("Audible language: " + language + "; Library language: " + helper.lang)
             log.debug("Book is not library language, deduct 2 points")
             return 2
         return 0
