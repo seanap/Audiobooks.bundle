@@ -190,6 +190,16 @@ class AudiobookAlbum(Agent.Album):
         )
 
         info = self.run_search(search_helper, result)
+        
+        # Set localized "by"
+        by_lang_dict = {
+            Locale.Language.English: 'by',
+            'de': 'von',
+            'fr': 'de',
+            'it': 'di'
+        }
+        localized_sep = by_lang_dict.get(lang, "by")
+        log.debug("Localized separator between title and artist: " + localized_sep)
 
         # Output the final results.
         log.separator(log_level="debug")
@@ -539,9 +549,9 @@ class AudiobookAlbum(Agent.Album):
         """
         lang_dict = {
             Locale.Language.English: 'English',
-            'de': 'German',
-            'fr': 'French',
-            'it': 'Italian'
+            'de': 'Deutsch',
+            'fr': 'Français',
+            'it': 'Italiano'
         }
 
         if language != lang_dict[helper.lang]:
