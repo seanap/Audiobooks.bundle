@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.09.13.1'
+VERSION_NO = '2021.09.14.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -205,8 +205,8 @@ class AudiobookAlbum(Agent.Album):
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
-            description = '\"%s\" by %s [%s]' % (
-                r['title'], r['artist'], r['year']
+            description = '[%s] \"%s\" %s %s' % (
+                r['year'], r['title'], localized_sep, r['artist']
             )
             log.debug(
                 '    [%s]    %s. %s (%s) %s {%s} [%s]',
