@@ -457,17 +457,17 @@ class AudiobookAlbum(Agent.Album):
         all_scores = []
 
         # Album name score
-        all_scores.append(
-            self.score_album(helper, title)
-        )
+        title_score = self.score_album(helper, title)
+        if title_score:
+            all_scores.append(title_score)
         # Author name score
-        all_scores.append(
-            self.score_author(author, helper)
-        )
+        author_score = self.score_author(author, helper)
+        if author_score:
+            all_scores.append(author_score)
         # Library language score
-        all_scores.append(
-            self.score_language(helper, language)
-        )
+        lang_score = self.score_language(helper, language)
+        if lang_score:
+            all_scores.append(lang_score)
 
         # Because builtin sum() isn't available
         sum_scores=lambda numberlist:reduce(lambda x,y:x+y,numberlist,0)
