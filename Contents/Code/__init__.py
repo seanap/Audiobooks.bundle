@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.09.02.1'
+VERSION_NO = '2021.09.13.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -370,8 +370,13 @@ class AudiobookAlbum(Agent.Album):
                     '[contains (@class,"releaseDateLabel")]/span'
                     )
             )
-            datetext = re.sub(r'[^0-9\-]', '', datetext)
-            date = self.getDateFromString(datetext)
+
+            # Handle different date structures
+            cleaned_datetext = re.search(r'\d{2}[-]\d{2}[-]\d{2}', datetext)
+            if not cleaned_datetext:
+                cleaned_datetext = re.search(r'\d{2}[.]\d{2}[.]\d{4}', datetext)
+
+            date = self.getDateFromString(cleaned_datetext.group(0))
             language = self.getStringContentFromXPath(
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
@@ -452,17 +457,17 @@ class AudiobookAlbum(Agent.Album):
         all_scores = []
 
         # Album name score
-        all_scores.append(
-            self.score_album(helper, title)
-        )
+        title_score = self.score_album(helper, title)
+        if title_score:
+            all_scores.append(title_score)
         # Author name score
-        all_scores.append(
-            self.score_author(author, helper)
-        )
+        author_score = self.score_author(author, helper)
+        if author_score:
+            all_scores.append(author_score)
         # Library language score
-        all_scores.append(
-            self.score_language(helper, language)
-        )
+        lang_score = self.score_language(helper, language)
+        if lang_score:
+            all_scores.append(lang_score)
 
         # Because builtin sum() isn't available
         sum_scores=lambda numberlist:reduce(lambda x,y:x+y,numberlist,0)
@@ -838,6 +843,8 @@ class AudiobookAlbum(Agent.Album):
         try:
             return Datetime.ParseDate(string).date()
         except AttributeError:
+            return None
+        except ValueError:
             return None
 
     def getStringContentFromXPath(self, source, query):
