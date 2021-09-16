@@ -205,8 +205,8 @@ class AudiobookAlbum(Agent.Album):
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
-            description = '[%s] \"%s\" %s %s' % (
-                r['year'], r['title'], localized_sep, r['artist']
+            description = '\"%s\" %s %s [%s]' % (
+                r['title'], localized_sep, r['artist'], r['year']
             )
             log.debug(
                 '    [%s]    %s. %s (%s) %s {%s} [%s]',
