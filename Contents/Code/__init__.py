@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.09.14.1'
+VERSION_NO = '2021.09.21.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
