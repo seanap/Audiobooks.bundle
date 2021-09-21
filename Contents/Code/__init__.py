@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.09.13.1'
+VERSION_NO = '2021.09.14.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -190,13 +190,23 @@ class AudiobookAlbum(Agent.Album):
         )
 
         info = self.run_search(search_helper, result)
+        
+        # Set localized "by"
+        by_lang_dict = {
+            Locale.Language.English: 'by',
+            'de': 'von',
+            'fr': 'de',
+            'it': 'di'
+        }
+        localized_sep = by_lang_dict.get(lang, "by")
+        log.debug("Localized separator between title and artist: " + localized_sep)
 
         # Output the final results.
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
-            description = '\"%s\" by %s [%s]' % (
-                r['title'], r['artist'], r['year']
+            description = '\"%s\" %s %s [%s]' % (
+                r['title'], localized_sep, r['artist'], r['year']
             )
             log.debug(
                 '    [%s]    %s. %s (%s) %s {%s} [%s]',
@@ -377,6 +387,7 @@ class AudiobookAlbum(Agent.Album):
                 cleaned_datetext = re.search(r'\d{2}[.]\d{2}[.]\d{4}', datetext)
 
             date = self.getDateFromString(cleaned_datetext.group(0))
+            log.debug("Parsed Date: " + str(date))
             language = self.getStringContentFromXPath(
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
@@ -539,12 +550,13 @@ class AudiobookAlbum(Agent.Album):
         """
         lang_dict = {
             Locale.Language.English: 'English',
-            'de': 'German',
-            'fr': 'French',
-            'it': 'Italian'
+            'de': 'Deutsch',
+            'fr': 'Français',
+            'it': 'Italiano'
         }
 
         if language != lang_dict[helper.lang]:
+            log.debug("Audible language: " + language + "; Library language: " + helper.lang)
             log.debug("Book is not library language, deduct 2 points")
             return 2
         return 0
