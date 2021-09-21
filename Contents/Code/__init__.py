@@ -205,8 +205,8 @@ class AudiobookAlbum(Agent.Album):
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
-            description = '\"%s\" %s %s [%s]' % (
-                r['title'], localized_sep, r['artist'], r['year']
+            description = '\"%s\" %s %s' % (
+                r['title'], localized_sep, r['artist']
             )
             log.debug(
                 '    [%s]    %s. %s (%s) %s {%s} [%s]',
@@ -216,10 +216,11 @@ class AudiobookAlbum(Agent.Album):
             results.Append(
                 MetadataSearchResult(
                     id=r['id'],
+                    lang=lang,
                     name=description,
                     score=r['score'],
                     thumb=r['thumb'],
-                    lang=lang
+                    year=r['year']
                 )
             )
 
