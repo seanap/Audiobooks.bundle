@@ -191,17 +191,19 @@ class AudiobookAlbum(Agent.Album):
 
         info = self.run_search(search_helper, result)
         
-        # Set localized "by"
-        by_lang_dict = {
-            Locale.Language.English: 'by',
-            'de': 'von',
-            'fr': 'de',
-            'it': 'di'
+        # Nested dict for localized separators
+        # 'T_A' is the separator between title and author
+        # 'A_N' is the separator between author and narrator
+        sep_dict = {
+            Locale.Language.English: {'T_A': 'by', 'A_N': 'with'},
+            'de': {'T_A': 'von', 'A_N': 'mit'},
+            'fr': {'T_A': 'de', 'A_N': 'avec'},
+            'it': {'T_A': 'di', 'A_N': 'con'}
         }
-        localized_sep = by_lang_dict.get(lang, "by")
+        local_seps = sep_dict[lang]
         log.debug(
-            'Using localized separator "%s" between title and artist',
-            localized_sep
+            'Using localized separators "%s" and "%s"',
+            local_seps['T_A'], local_seps['A_N'] 
         )
 
         # Output the final results.
@@ -219,8 +221,12 @@ class AudiobookAlbum(Agent.Album):
             # Shorten narrator
             nr_inits = self.name_to_initials(r['narrator'])
             
-            description = '\"%s\" %s %s with %s' % (
-                title_trunc, localized_sep, artist_inits, nr_inits
+            description = '\"%s\" %s %s %s %s' % (
+                title_trunc,
+                local_seps['T_A'],
+                artist_inits, 
+                local_seps['A_N'], 
+                nr_inits
             )
             log.debug(
                 '  [%s]  %s. %s (%s) %s; %s {%s} [%s]',
