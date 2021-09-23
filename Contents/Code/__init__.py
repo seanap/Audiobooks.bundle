@@ -216,14 +216,16 @@ class AudiobookAlbum(Agent.Album):
             
             # Shorten artist
             artist_inits = self.name_to_initials(r['artist'])
+            # Shorten narrator
+            nr_inits = self.name_to_initials(r['narrator'])
             
-            description = '\"%s\" %s %s' % (
-                title_trunc, localized_sep, artist_inits
+            description = '\"%s\" %s %s with %s' % (
+                title_trunc, localized_sep, artist_inits, nr_inits
             )
             log.debug(
-                '  [%s]  %s. %s (%s) %s {%s} [%s]',
+                '  [%s]  %s. %s (%s) %s; %s {%s} [%s]',
                 r['score'], (i + 1), r['title'], r['year'],
-                r['artist'], r['id'], r['thumb']
+                r['artist'], r['narrator'], r['id'], r['thumb']
             )
             results.Append(
                 MetadataSearchResult(
@@ -541,7 +543,8 @@ class AudiobookAlbum(Agent.Album):
                     'date': date,
                     'score': score,
                     'thumb': thumb,
-                    'artist': author
+                    'artist': author,
+                    'narrator': narrator
                 }
             )
         else:
