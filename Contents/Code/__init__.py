@@ -365,7 +365,7 @@ class AudiobookAlbum(Agent.Album):
         # and merged with dots.
         # Example: 'Arthur Conan Doyle' -> 'A.C.Doyle'
         name_parts = input_name.split()
-        new_Name = ""
+        new_name = ""
         
         # Check if prename and surname exist, otherwise exit
         if len(name_parts) < 2:
@@ -375,11 +375,11 @@ class AudiobookAlbum(Agent.Album):
         for i in range(len(name_parts)-1):
             s = name_parts[i]
             # If prename already is an initial take it as is
-            new_Name += (s[0] + '.') if len(s)>2 and s[1]!='.' else s
+            new_name += (s[0] + '.') if len(s)>2 and s[1]!='.' else s
         # Add surname
-        new_Name += name_parts[-1]
+        new_name += name_parts[-1]
         
-        return new_Name
+        return new_name
     
     def create_search_url(self, ctx, helper):
         # Make the URL
