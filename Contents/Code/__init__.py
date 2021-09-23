@@ -688,12 +688,12 @@ class AudiobookAlbum(Agent.Album):
             )
             page_content = remove_inv_json_esc.sub(r'\1\\\2', page_content)
             json_data = self.json_decode(page_content)
-
+            
             helper.re_parse_with_date_published(json_data)
-
+    
     def use_copyright_date(self, helper, html):
         cstring = None
-
+        
         for r in html.xpath(u'//span[contains(text(), "\xA9")]'):
             cstring = self.getStringContentFromXPath(
                 r, u'normalize-space(//span[contains(text(), "\xA9")])'
@@ -702,23 +702,13 @@ class AudiobookAlbum(Agent.Album):
             if cstring.startswith(u"\xA9 "):
                 cstring = ""
                 helper.date = helper.date[:4]
-
+        
         if cstring:
-            if "Public Domain" in cstring:
-                helper.date = re.match(".*\(P\)(\d{4})", cstring).group(1)
-            else:
-                if cstring.startswith(u'\xA9'):
-                    cstring = cstring[1:]
-                if "(P)" in cstring:
-                    cstring = re.match("(.*)\(P\).*", cstring).group(1)
-                if ";" in cstring:
-                    helper.date = str(
-                        min(
-                            [int(i) for i in cstring.split() if i.isdigit()]
-                        )
-                    )
-                else:
-                    helper.date = re.match(".?(\d{4}).*", cstring).group(1)
+            if cstring.startswith(u'\xA9'):
+                # strip copyright symbol
+                cstring = cstring[1:]
+            # match first 4 digits found
+            helper.date = re.search(r'\d{4}', cstring).group()
 
     def handle_series(self, helper, html):
         for r in html.xpath('//li[contains(@class, "seriesLabel")]'):
