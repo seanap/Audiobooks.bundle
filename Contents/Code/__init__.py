@@ -194,16 +194,16 @@ class AudiobookAlbum(Agent.Album):
         # Nested dict for localized separators
         # 'T_A' is the separator between title and author
         # 'A_N' is the separator between author and narrator
-        sep_dict = {
-            Locale.Language.English: {'T_A': 'by', 'A_N': 'with'},
+        separator_dict = {
+            Locale.Language.English: {'T_A': 'by', 'A_N': 'w/'},
             'de': {'T_A': 'von', 'A_N': 'mit'},
-            'fr': {'T_A': 'de', 'A_N': 'avec'},
+            'fr': {'T_A': 'de', 'A_N': 'ac'},
             'it': {'T_A': 'di', 'A_N': 'con'}
         }
-        local_seps = sep_dict[lang]
+        local_separators = separator_dict[lang]
         log.debug(
             'Using localized separators "%s" and "%s"',
-            local_seps['T_A'], local_seps['A_N'] 
+            local_separators['T_A'], local_separators['A_N'] 
         )
 
         # Output the final results.
@@ -213,20 +213,20 @@ class AudiobookAlbum(Agent.Album):
             # Truncate long titles
             # Displayable chars is ~60 (see issue #32)
             # Inlcude tolerance to only truncate if >4 chars need to be cut
-            title_trunc = (r['title'][:32] + '..') if len(
-                r['title']) > 38 else r['title']
+            title_trunc = (r['title'][:30] + '..') if len(
+                r['title']) > 36 else r['title']
             
             # Shorten artist
-            artist_inits = self.name_to_initials(r['artist'])
+            artist_initials = self.name_to_initials(r['artist'])
             # Shorten narrator
-            nr_inits = self.name_to_initials(r['narrator'])
+            narrator_initials = self.name_to_initials(r['narrator'])
             
             description = '\"%s\" %s %s %s %s' % (
                 title_trunc,
-                local_seps['T_A'],
-                artist_inits, 
-                local_seps['A_N'], 
-                nr_inits
+                local_separators['T_A'],
+                artist_initials, 
+                local_separators['A_N'], 
+                narrator_initials
             )
             log.debug(
                 '  [%s]  %s. %s (%s) %s; %s {%s} [%s]',
@@ -364,22 +364,22 @@ class AudiobookAlbum(Agent.Album):
         # Only the surname stays as whole, the rest gets truncated
         # and merged with dots.
         # Example: 'Arthur Conan Doyle' -> 'A.C.Doyle'
-        nameparts = input_name.split()
-        newName = ""
+        name_parts = input_name.split()
+        new_Name = ""
         
         # Check if prename and surname exist, otherwise exit
-        if len(nameparts) < 2:
+        if len(name_parts) < 2:
             return input_name
         
         # traverse through prenames
-        for i in range(len(nameparts)-1):
-            s = nameparts[i]
+        for i in range(len(name_parts)-1):
+            s = name_parts[i]
             # If prename already is an initial take it as is
-            newName += (s[0] + '.') if len(s)>2 and s[1]!='.' else s
+            new_Name += (s[0] + '.') if len(s)>2 and s[1]!='.' else s
         # Add surname
-        newName += nameparts[-1]
+        new_Name += name_parts[-1]
         
-        return newName
+        return new_Name
     
     def create_search_url(self, ctx, helper):
         # Make the URL
