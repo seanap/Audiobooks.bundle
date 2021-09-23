@@ -199,7 +199,10 @@ class AudiobookAlbum(Agent.Album):
             'it': 'di'
         }
         localized_sep = by_lang_dict.get(lang, "by")
-        log.debug("Localized separator between title and artist: " + localized_sep)
+        log.debug(
+            'Using localized separator "%s" between title and artist',
+            localized_sep
+        )
 
         # Output the final results.
         log.separator(log_level="debug")
@@ -388,7 +391,6 @@ class AudiobookAlbum(Agent.Album):
                 cleaned_datetext = re.search(r'\d{2}[.]\d{2}[.]\d{4}', datetext)
 
             date = self.getDateFromString(cleaned_datetext.group(0))
-            log.debug("Parsed Date: " + str(date))
             language = self.getStringContentFromXPath(
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
@@ -557,7 +559,11 @@ class AudiobookAlbum(Agent.Album):
         }
 
         if language != lang_dict[helper.lang]:
-            log.debug("Audible language: " + language + "; Library language: " + helper.lang)
+            log.debug(
+                'Audible language: %s; Library language: %s',
+                language,
+                helper.lang
+            )
             log.debug("Book is not library language, deduct 2 points")
             return 2
         return 0
