@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.09.21.1'
+VERSION_NO = '2021.09.23.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -208,8 +208,14 @@ class AudiobookAlbum(Agent.Album):
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
+            # Truncate title if too long
+            # Displayable chars is ~60 (see issue #32)
+            # Inlcude tolerance to only truncate if >4 chars need to be cut
+            title_trunc = (r['title'][:32] + '..') if len(
+                r['title']) > 38 else r['title']
+            
             description = '\"%s\" %s %s' % (
-                r['title'], localized_sep, r['artist']
+                title_trunc, localized_sep, r['artist']
             )
             log.debug(
                 '    [%s]    %s. %s (%s) %s {%s} [%s]',
