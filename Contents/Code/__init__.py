@@ -10,7 +10,7 @@ from search_tools import SearchTool
 from update_tools import UpdateTool
 from urls import SiteUrl
 
-VERSION_NO = '2021.09.21.1'
+VERSION_NO = '2021.09.23.1'
 
 # Starting value for score before deductions are taken.
 INITIAL_SCORE = 100
@@ -191,27 +191,47 @@ class AudiobookAlbum(Agent.Album):
 
         info = self.run_search(search_helper, result)
         
-        # Set localized "by"
-        by_lang_dict = {
-            Locale.Language.English: 'by',
-            'de': 'von',
-            'fr': 'de',
-            'it': 'di'
+        # Nested dict for localized separators
+        # 'T_A' is the separator between title and author
+        # 'A_N' is the separator between author and narrator
+        separator_dict = {
+            Locale.Language.English: {'T_A': 'by', 'A_N': 'w/'},
+            'de': {'T_A': 'von', 'A_N': 'mit'},
+            'fr': {'T_A': 'de', 'A_N': 'ac'},
+            'it': {'T_A': 'di', 'A_N': 'con'}
         }
-        localized_sep = by_lang_dict.get(lang, "by")
-        log.debug("Localized separator between title and artist: " + localized_sep)
+        local_separators = separator_dict[lang]
+        log.debug(
+            'Using localized separators "%s" and "%s"',
+            local_separators['T_A'], local_separators['A_N'] 
+        )
 
         # Output the final results.
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
-            description = '\"%s\" %s %s' % (
-                r['title'], localized_sep, r['artist']
+            # Truncate long titles
+            # Displayable chars is ~60 (see issue #32)
+            # Inlcude tolerance to only truncate if >4 chars need to be cut
+            title_trunc = (r['title'][:30] + '..') if len(
+                r['title']) > 36 else r['title']
+            
+            # Shorten artist
+            artist_initials = self.name_to_initials(r['artist'])
+            # Shorten narrator
+            narrator_initials = self.name_to_initials(r['narrator'])
+            
+            description = '\"%s\" %s %s %s %s' % (
+                title_trunc,
+                local_separators['T_A'],
+                artist_initials, 
+                local_separators['A_N'], 
+                narrator_initials
             )
             log.debug(
-                '    [%s]    %s. %s (%s) %s {%s} [%s]',
+                '  [%s]  %s. %s (%s) %s; %s {%s} [%s]',
                 r['score'], (i + 1), r['title'], r['year'],
-                r['artist'], r['id'], r['thumb']
+                r['artist'], r['narrator'], r['id'], r['thumb']
             )
             results.Append(
                 MetadataSearchResult(
@@ -338,7 +358,29 @@ class AudiobookAlbum(Agent.Album):
             input_name
         )
         return normalizedName
-
+    
+    def name_to_initials(self, input_name):
+        # Shorten input_name by splitting on whitespaces
+        # Only the surname stays as whole, the rest gets truncated
+        # and merged with dots.
+        # Example: 'Arthur Conan Doyle' -> 'A.C.Doyle'
+        name_parts = input_name.split()
+        new_name = ""
+        
+        # Check if prename and surname exist, otherwise exit
+        if len(name_parts) < 2:
+            return input_name
+        
+        # traverse through prenames
+        for i in range(len(name_parts)-1):
+            s = name_parts[i]
+            # If prename already is an initial take it as is
+            new_name += (s[0] + '.') if len(s)>2 and s[1]!='.' else s
+        # Add surname
+        new_name += name_parts[-1]
+        
+        return new_name
+    
     def create_search_url(self, ctx, helper):
         # Make the URL
         if helper.media.artist:
@@ -388,7 +430,6 @@ class AudiobookAlbum(Agent.Album):
                 cleaned_datetext = re.search(r'\d{2}[.]\d{2}[.]\d{4}', datetext)
 
             date = self.getDateFromString(cleaned_datetext.group(0))
-            log.debug("Parsed Date: " + str(date))
             language = self.getStringContentFromXPath(
                 r, (
                     u'div/div/div/div/div/div/span/ul/li'
@@ -508,7 +549,8 @@ class AudiobookAlbum(Agent.Album):
                     'date': date,
                     'score': score,
                     'thumb': thumb,
-                    'artist': author
+                    'artist': author,
+                    'narrator': narrator
                 }
             )
         else:
@@ -557,7 +599,11 @@ class AudiobookAlbum(Agent.Album):
         }
 
         if language != lang_dict[helper.lang]:
-            log.debug("Audible language: " + language + "; Library language: " + helper.lang)
+            log.debug(
+                'Audible language: %s; Library language: %s',
+                language,
+                helper.lang
+            )
             log.debug("Book is not library language, deduct 2 points")
             return 2
         return 0
@@ -642,12 +688,12 @@ class AudiobookAlbum(Agent.Album):
             )
             page_content = remove_inv_json_esc.sub(r'\1\\\2', page_content)
             json_data = self.json_decode(page_content)
-
+            
             helper.re_parse_with_date_published(json_data)
-
+    
     def use_copyright_date(self, helper, html):
         cstring = None
-
+        
         for r in html.xpath(u'//span[contains(text(), "\xA9")]'):
             cstring = self.getStringContentFromXPath(
                 r, u'normalize-space(//span[contains(text(), "\xA9")])'
@@ -656,23 +702,13 @@ class AudiobookAlbum(Agent.Album):
             if cstring.startswith(u"\xA9 "):
                 cstring = ""
                 helper.date = helper.date[:4]
-
+        
         if cstring:
-            if "Public Domain" in cstring:
-                helper.date = re.match(".*\(P\)(\d{4})", cstring).group(1)
-            else:
-                if cstring.startswith(u'\xA9'):
-                    cstring = cstring[1:]
-                if "(P)" in cstring:
-                    cstring = re.match("(.*)\(P\).*", cstring).group(1)
-                if ";" in cstring:
-                    helper.date = str(
-                        min(
-                            [int(i) for i in cstring.split() if i.isdigit()]
-                        )
-                    )
-                else:
-                    helper.date = re.match(".?(\d{4}).*", cstring).group(1)
+            if cstring.startswith(u'\xA9'):
+                # strip copyright symbol
+                cstring = cstring[1:]
+            # match first 4 digits found
+            helper.date = re.search(r'\d{4}', cstring).group()
 
     def handle_series(self, helper, html):
         for r in html.xpath('//li[contains(@class, "seriesLabel")]'):
