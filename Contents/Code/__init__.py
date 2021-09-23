@@ -208,17 +208,20 @@ class AudiobookAlbum(Agent.Album):
         log.separator(log_level="debug")
         log.debug('Final result:')
         for i, r in enumerate(info):
-            # Truncate title if too long
+            # Truncate long titles
             # Displayable chars is ~60 (see issue #32)
             # Inlcude tolerance to only truncate if >4 chars need to be cut
             title_trunc = (r['title'][:32] + '..') if len(
                 r['title']) > 38 else r['title']
             
+            # Shorten artist
+            artist_inits = self.name_to_initials(r['artist'])
+            
             description = '\"%s\" %s %s' % (
-                title_trunc, localized_sep, r['artist']
+                title_trunc, localized_sep, artist_inits
             )
             log.debug(
-                '    [%s]    %s. %s (%s) %s {%s} [%s]',
+                '  [%s]  %s. %s (%s) %s {%s} [%s]',
                 r['score'], (i + 1), r['title'], r['year'],
                 r['artist'], r['id'], r['thumb']
             )
@@ -347,7 +350,29 @@ class AudiobookAlbum(Agent.Album):
             input_name
         )
         return normalizedName
-
+    
+    def name_to_initials(self, input_name):
+        # Shorten input_name by splitting on whitespaces
+        # Only the surname stays as whole, the rest gets truncated
+        # and merged with dots.
+        # Example: 'Arthur Conan Doyle' -> 'A.C.Doyle'
+        nameparts = input_name.split()
+        newName = ""
+        
+        # Check if prename and surname exist, otherwise exit
+        if len(nameparts) < 2:
+            return input_name
+        
+        # traverse through prenames
+        for i in range(len(nameparts)-1):
+            s = nameparts[i]
+            # If prename already is an initial take it as is
+            newName += (s[0] + '.') if len(s)>2 and s[1]!='.' else s
+        # Add surname
+        newName += nameparts[-1]
+        
+        return newName
+    
     def create_search_url(self, ctx, helper):
         # Make the URL
         if helper.media.artist:
