@@ -1,36 +1,19 @@
 # Changelog
 
-## [v2021.08.30.1](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.30.1) (2021-08-30)
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-[Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/v2021.08.29.2...v2021.08.30.1)
+### 0.2.1 (2021-10-06)
 
-**Implemented enhancements:**
 
-- Add log levels to prefs [\#14](https://github.com/seanap/Audiobooks.bundle/issues/14)
-- Use real log levels [\#24](https://github.com/seanap/Audiobooks.bundle/pull/24) ([djdembeck](https://github.com/djdembeck))
-- Map series' to moods, code quality improvements [\#23](https://github.com/seanap/Audiobooks.bundle/pull/23) ([djdembeck](https://github.com/djdembeck))
+### Features
 
-## [v2021.08.29.2](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.29.2) (2021-08-30)
+* **results:** :lipstick: move year to embedded dialog area ([0d5fb2e](https://github.com/seanap/Audiobooks.bundle/commit/0d5fb2edb4990e581ce087600a648f6ebf1aba70))
 
-[Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/v2021.08.28.1...v2021.08.29.2)
 
-**Implemented enhancements:**
+### Bug Fixes
 
-- Refine score when multiple of same book [\#19](https://github.com/seanap/Audiobooks.bundle/issues/19)
-- Speed and scoring improvements [\#21](https://github.com/seanap/Audiobooks.bundle/pull/21) ([djdembeck](https://github.com/djdembeck))
-
-## [v2021.08.28.1](https://github.com/seanap/Audiobooks.bundle/tree/v2021.08.28.1) (2021-08-28)
-
-[Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/2021.08.27.1...v2021.08.28.1)
-
-**Implemented enhancements:**
-
-- Improve score calculation; Fix crash on single-genre [\#18](https://github.com/seanap/Audiobooks.bundle/pull/18) ([djdembeck](https://github.com/djdembeck))
-
-**Fixed bugs:**
-
-- Handle 'special' releases [\#17](https://github.com/seanap/Audiobooks.bundle/issues/17)
-- Improve scoring for auto scan [\#15](https://github.com/seanap/Audiobooks.bundle/issues/15)
+* **search:** :bug: fix score sum if author is missing ([7134ac8](https://github.com/seanap/Audiobooks.bundle/commit/7134ac8558d620242dd97bee48707f2c2b4cc7fe))
+* **search:** :bug: handle different countries' date structures ([6fcfb2b](https://github.com/seanap/Audiobooks.bundle/commit/6fcfb2b4677cf171474e8789a1c98bada88774ea))
 
 ## [2021.08.27.1](https://github.com/seanap/Audiobooks.bundle/tree/2021.08.27.1) (2021-08-27)
 
