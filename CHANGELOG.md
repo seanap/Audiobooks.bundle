@@ -15,6 +15,19 @@ All notable changes to this project will be documented in this file. See [standa
 * **search:** :bug: fix score sum if author is missing ([7134ac8](https://github.com/seanap/Audiobooks.bundle/commit/7134ac8558d620242dd97bee48707f2c2b4cc7fe))
 * **search:** :bug: handle different countries' date structures ([6fcfb2b](https://github.com/seanap/Audiobooks.bundle/commit/6fcfb2b4677cf171474e8789a1c98bada88774ea))
 
+### 0.2.1 (2021-10-06)
+
+
+### Features
+
+* **results:** :lipstick: move year to embedded dialog area ([0d5fb2e](https://github.com/seanap/Audiobooks.bundle/commit/0d5fb2edb4990e581ce087600a648f6ebf1aba70))
+
+
+### Bug Fixes
+
+* **search:** :bug: fix score sum if author is missing ([7134ac8](https://github.com/seanap/Audiobooks.bundle/commit/7134ac8558d620242dd97bee48707f2c2b4cc7fe))
+* **search:** :bug: handle different countries' date structures ([6fcfb2b](https://github.com/seanap/Audiobooks.bundle/commit/6fcfb2b4677cf171474e8789a1c98bada88774ea))
+
 ## [2021.08.27.1](https://github.com/seanap/Audiobooks.bundle/tree/2021.08.27.1) (2021-08-27)
 
 [Full Changelog](https://github.com/seanap/Audiobooks.bundle/compare/v2021.08.24.2...2021.08.27.1)
