@@ -4,28 +4,30 @@
 ## What is this?
 A Plex Metadata Agent for Audiobooks stored in a music library.
 
-This agent sets metadata for your Plex Audiobook library, scraping data from Audible.com. It uses the `Album Artist` tag as the books Author and uses the `Album Title` tag as the Book Title. All audio files will need to be tagged correctly in order for this thing to do its job.
+This agent sets metadata for your Plex Audiobook library by pulling directly from the internal Audible API. It uses the `Album Artist` file tag as the books Author and uses the `Album Title` file tag as the Book Title. All audio files will need to have these two tags tagged correctly in order for this thing to do its job.
 
-## Differences between my version and Macr0dev's
+## Differences between Audnexus and Macr0dev's
 * The Narrator is mapped to Style.  
-* Only Genres put in the Genre tag.  
-* The series is currently pulled into AlbumSort tag.  
+* Set's upto 6 meaningfull genres.  
+* The series is mapped to Mood, and into AlbumSort tag.  
+* Audnexus uses a [database](https://github.com/djdembeck/audnexus) and connects directly to the Audible API
+* Audnexus also sets the Author metadata in Plex
 
-This version allows for better filtering and cleaner browsing in plex and various audiobook apps (such as PlexAmp), a must have for large libraries. Everything else is the same.
+This version allows for better filtering and cleaner browsing in plex and various audiobook apps (such as PlexAmp, BookCamp, Prologue), a must have for large libraries. Everything else is the same.
 <!-- blank line -->
 ----
 <!-- blank line -->
 ## Installation
-1. Download my repo by clicking [Here](https://github.com/seanap/Audiobooks.bundle/archive/master.zip).  
-   * Alternatively, click the green 'Code' dropdown button and select “Download Zip”.
+1. Download the plug-in by clicking [Here](https://github.com/djdembeck/Audnexus.bundle/archive/refs/heads/main.zip).  
+   * `https://github.com/djdembeck/Audnexus.bundle/archive/refs/heads/main.zip`
 2. The plug-in bundle will be located within a zip archive. Unzip the archive.
-3. Edit the bundle’s folder name and remove "-master" so you are left with the foldername “Audiobooks.bundle”
-   * Bundles downloaded from GitHub will usually have extra identifiers appended to the bundle’s filename, such as “-master”.
+3. Edit the bundle’s folder name and remove "-main" so you are left with the foldername “Audnexus.bundle”
+   * Bundles downloaded from GitHub will usually have extra identifiers appended to the bundle’s filename, such as “-master”, it is importaint that the folder name ends in .bundle  
 4. Copy or move the plug-in bundle into the Plug-Ins folder on the computer running Plex Media Server
    * Windows: `%LOCALAPPDATA%\Plex Media Server\Plug-ins`
    * macOS: `~/Library/Application Support/Plex Media Server/Plug-ins`
    * Linux: `$PLEX_HOME/Library/Application Support/Plex Media Server/Plug-ins`
-5. Restart Plex Media Server to make sure that the new plugin will be loaded.
+5. Go you your Audiobook Library > Edit > Advanced - This will load the plug in, return to guide for initial config settings.
 ##### Return to Guide
 [Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide#configure-metadata-agent-in-plex)
 
@@ -39,56 +41,52 @@ This version allows for better filtering and cleaner browsing in plex and variou
 | ALBUM         | Title            |
 | ALBUMARTIST   | Author of Album  |
 | ALBUMSORT     | Sort Album       |
-| Genre1/Genre2 | Genre1, Genre2   |
-| cover         | Poster           |
+| ALBUMARTISTSORT | Sort Name [Not used] |
+| Genre1/Genre2 | Genre1, Genre2 [Not used]  |
+| cover         | Poster  [Not used]         |
 | ARTIST        | Artists on Track |
 
-| Scrapped by Audible Agent | Plex Tag|
+| Set by Audible Agent | Plex Tag|
 | ------------- | ---------------- |
-| Narrator      | Style            |
+| Narrators      | Style            |
 | Series        | Mood             |
-| Release Date  | Originally Available |
+| Release Date  | Publication Date |
 | Publisher's Summary | Review     |
 | Production Studio | Record Label |
+| Genres    | Genre  |
+| Rating | :star::star::star::star::star: |
 
 
 ### Library Creation Options:
 
-- Create a `BASIC MUSIC LIBRARY` (not a premium Plex music library)
-- **DO NOT** check `Use Embedded Tags`
-- **DO** check `Store Track Progress`
-- Agent - Select `Audiobooks`
+ * **General** select `Music`  
+ * **Add folders** browse to your Audiobook folders  
+ * **Advanced** set the following:  
+   * Agent = Audnexus Agents  
+   * Keep existing genre's - The new agent pulls 4-6 meaningful genres but if you want to keep your existing CHECK this box  
+   * Album sorting - By Name (This uses the Albumsort tag to keep series together and in order)  
+   * *UNCHECK* Prefer Local Metadata  
+   * *CHECK* Store track progress  
+   * *UNCHECK* Author Bio  
+   * Genres = None  
+   * Album Art = Local Files Only
 
-
-### Agent Configuration Options:
-
-If you're in the US and want to scrape from Audible.com - you're all set!
-
-If you're NOT in the US, or just want more flexibility with your searches you have options:
-
-- `Manually Select Audible Site`: This option allows you to manually select which site you're going to scrape.  
-- If this is not checked, the language you selected for the library, or the language selected for a manual match will be used to select which site to scrape from.  
-
-- `Select Audible site to use`: This option is ignored if the `Manually Select Audible Site` box is not checked.  
 
 ### Tips for greatest success:
 
 * Use mp3tag to auto tag and rename files https://github.com/seanap/Audible.com-Search-by-Album  
 * Set "Album" tag in audio file as the book title  
 * Set "Artist" tag in audio file as the book author    
-* Manual 'match' will use the Author/Artist field if it's present, but you cannot enter it manually.  Only the title.  
+* Manual match for both Album and Author can accept ASIN 
 * Make sure all the tracks have the same Albumartist and Album, and also have correct Track Number tags.  
-* Store each in a folder `%author% \ %series% \ %year% - %album% \ %album% (%year%) - pt(%track%)`
-* If this agent matches two different books as the same book, which looks like a duplicate in Plex, Unmatch BOTH books and start by manually matching the incorrect book, then re-match the book that was correct.
+* Store each in a folder `%author% \ %series% \ %year% - %album% \ %album% (%year%).m4b`
 
 ### Notes:
 
--Title data in parens ()  such as (Unabridged) is automatically removed before search.  I've found this improves the results and matching.
+-Title data in parens ()  such as (Unabridged) is automatically removed before search.
 
--Currently, I don't have a great source for author data. What populates now (if any) is being done automatically from last.fm. You're welcome to go add some data there. This was kind of a happy accident.
-
--The first two genre tags show up in the top right when viewing the album/book.  Genre tags are listed in the following order: Genre1, Genre2
+-The first two genre tags show up in the top right when viewing the album/book.  Genre tags are listed in the following order: Genre1, Genre2, Genre3... etc.
 
 -You can filter by the various tags that are added to each book. Be it author, series, narrator, etc.
 
--Orignal code by Macr0dev https://github.com/macr0dev/Audiobooks.bundle
+-Orignal code by [djdembeck](https://github.com/djdembeck)
