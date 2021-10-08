@@ -1,4 +1,4 @@
-# :bangbang:Udated to new agent Audnexus:bangbang:
+# :bangbang:Updated to new agent Audnexus:bangbang:
 
 # Audiobook (Audible) metadata agent
 
